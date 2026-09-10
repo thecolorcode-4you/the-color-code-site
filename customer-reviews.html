@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Customer Reviews — The Color Code</title>
+<meta name="description" content="Read what Color Code clients say, and see how reviews are shared with consent.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=2">
+</head>
+<body>
+<div class="banner">STAGING PREVIEW — local build only, nothing here is live. This form does not submit anywhere yet.</div>
+
+<header class="site-nav">
+  <div class="wrap">
+    <a class="wordmark" href="index.html"><img src="assets/logo.png" alt="The Color Code"></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="how-it-works.html">How It Works</a></li>
+      <li><a href="start-your-analysis.html">Start Your Analysis</a></li>
+      <li><a href="results-and-benefits.html">Results &amp; Benefits</a></li>
+      <li><a href="customer-reviews.html" aria-current="page">Customer Reviews</a></li>
+      <li><a href="about.html">About Us</a></li>
+      <li><a href="faq-and-policies.html">FAQ &amp; Policies</a></li>
+    </ul>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <section>
+      <p class="eyebrow">Customer Reviews</p>
+      <h1 class="page-title">What clients are saying</h1>
+
+      <div class="empty-state">
+        <h3>No reviews yet</h3>
+        <p>We're just launching this pilot — the first reviews will appear here once clients choose to share them.</p>
+      </div>
+
+      <p class="lede" style="margin-top:20px;">Reviews are shared voluntarily. Submitting a review consents to your written testimonial and color palette swatches being displayed publicly, once approved. Including a photo is always a separate, distinct choice. Every submission is moderated before it goes live (Decision 6) — nothing is posted automatically.</p>
+    </section>
+
+    <section>
+      <h2 class="section-title">Share your review</h2>
+
+      <div class="todo">
+        <strong>TODO — exact review questions</strong>
+        Owner: feedback-learning (Bella), per the content-ownership table (Decision 9). The fields below are a structural placeholder for the consent mechanics decided in Decision 6, not the final question set.
+      </div>
+
+      <form class="form-block" data-review-form>
+        <div class="field">
+          <label for="review-name">Name (or how you'd like to be credited)</label>
+          <input type="text" id="review-name" name="review-name">
+        </div>
+        <div class="field">
+          <label for="review-text">Your review</label>
+          <textarea id="review-text" name="review-text" placeholder="Placeholder — real prompt questions pending feedback-learning (Bella)"></textarea>
+        </div>
+
+        <div class="checkbox-field">
+          <input type="checkbox" id="consent-review" name="consent-review" required>
+          <label for="consent-review">
+            I consent to my written review and color palette swatches being displayed publicly, pending approval.
+            <span class="form-note">[TODO: exact legal wording — Whitney/Piper legal review]</span>
+          </label>
+        </div>
+        <div class="checkbox-field">
+          <input type="checkbox" id="consent-photo" name="consent-photo">
+          <label for="consent-photo">
+            I'd also like to include a photo with my review (separate consent).
+            <span class="form-note">[TODO: exact legal wording]</span>
+          </label>
+        </div>
+
+        <div>
+          <button class="btn-primary" type="submit">Submit review</button>
+        </div>
+        <p data-preview-note hidden style="font-size:13px;color:var(--text-muted);">This is a staging preview — nothing was actually sent anywhere.</p>
+      </form>
+
+      <div class="todo">
+        <strong>OPEN — who moderates the queue?</strong>
+        Per Decision 6, submissions require human approval before going public. Likely feedback-learning (Bella) per the org chart, but not yet confirmed with her.
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <span class="footer-mark">The Color Code.</span>
+      <ul class="footer-nav">
+        <li><a href="how-it-works.html">How It Works</a></li>
+        <li><a href="start-your-analysis.html">Start Your Analysis</a></li>
+        <li><a href="results-and-benefits.html">Results &amp; Benefits</a></li>
+        <li><a href="customer-reviews.html">Customer Reviews</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="faq-and-policies.html">FAQ &amp; Policies</a></li>
+      </ul>
+    </div>
+    <p class="footer-band">One hue. Twelve seasons. Yours.</p>
+    <p class="footer-fine">The Color Code · Tulane pilot, free during launch (Decision 2) · Staging preview built by web-development — not the live site.</p>
+  </div>
+</footer>
+
+<script src="site.js"></script>
+</body>
+</html>

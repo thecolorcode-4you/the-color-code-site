@@ -1,0 +1,4 @@
+# Per WEBSITE-BRAINSTORM.md Decision 13: block indexing during the free pilot.
+# Revisit when ready to launch publicly / sell.
+User-agent: *
+Disallow: /
