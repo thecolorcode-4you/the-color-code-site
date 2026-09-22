@@ -36,23 +36,21 @@
       <h1 class="page-title">Start Your Analysis with Bella</h1>
       <p class="lede">Bella is our AI color-analysis agent — she reviews every submission automatically, applying the same method every time. No manual review, no wait on a human's schedule.</p>
 
-      <div class="todo">
-        <strong>OPEN QUESTION — instant or async delivery?</strong>
-        crm's status flow mentions "submitted → in progress → delivered," but we don't yet know the actual turnaround. See Open Questions in WEBSITE-BRAINSTORM.md.
-      </div>
+      <p class="lede" style="margin-top:12px;">Your results are ready instantly. The moment you submit, your full report is ready to view on the site — with the option to download it or have it emailed to you.</p>
     </section>
 
     <section>
       <h2 class="section-title">Your details</h2>
 
       <div class="todo">
-        <strong>TODO — exact intake fields</strong>
-        Owner: color-analysis (Whitney), per PREPARE-WEBSITE.md and the content-ownership table. The form below is a structural placeholder only — the real photo-upload spec (how many photos, lighting, angles) and the actual questionnaire questions haven't been written yet. Do not treat the fields below as final.
+        <strong>TODO — exact questionnaire questions</strong>
+        Owner: color-analysis (Whitney), per PREPARE-WEBSITE.md and the content-ownership table. The photo-upload spec is confirmed below; the actual questionnaire questions still haven't been written yet. Do not treat the questionnaire field as final.
       </div>
 
       <form class="form-block" data-intake-form>
         <div class="field">
-          <label for="photo">Photo upload (spec TODO)</label>
+          <label for="photo">Photo upload</label>
+          <p class="form-note" style="margin-top:-2px;margin-bottom:8px;">One photo, taken in natural lighting, face-on.</p>
           <input type="file" id="photo" name="photo" accept="image/*">
         </div>
         <div class="field">
@@ -68,14 +66,12 @@
           <input type="checkbox" id="consent-analysis" name="consent-analysis" required>
           <label for="consent-analysis">
             I agree that the photos and answers I submit will be used only to create my color analysis report, and for no other purpose.
-            <span class="form-note">[TODO: final legal review pending — Whitney, with Bella &amp; Sofia]</span>
           </label>
         </div>
         <div class="checkbox-field">
           <input type="checkbox" id="consent-research" name="consent-research">
           <label for="consent-research">
             I'd also like to help improve The Color Code by allowing my anonymized data to be used for research. (Optional — this won't affect my report.)
-            <span class="form-note">[TODO: final legal review pending — Whitney, with Bella &amp; Sofia]</span>
           </label>
         </div>
 
@@ -85,7 +81,7 @@
         <p data-preview-note hidden style="font-size:13px;color:var(--text-muted);">This is a staging preview — nothing was actually sent anywhere.</p>
       </form>
 
-      <p class="lede" style="margin-top:20px;">After you submit, your analysis moves through three stages — Submitted → In Progress → Delivered. This report will be ready within minutes.</p>
+      <p class="lede" style="margin-top:20px;">Your report is ready the moment you submit — no waiting. View your palette and the color theory behind it right on the site, download it, or have it emailed to you.</p>
     </section>
 
   </div>
