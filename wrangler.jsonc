@@ -1,0 +1,23 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Must match the Worker's name in the Cloudflare dashboard (Workers & Pages).
+  "name": "the-color-code-site",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page",
+    // Only API requests run our code; every page is served straight from /public.
+    "run_worker_first": ["/api/*"]
+  },
+  // No IDs needed: Wrangler creates the database and photo bucket on the first deploy.
+  "d1_databases": [
+    { "binding": "DB", "database_name": "the-color-code-db" }
+  ],
+  "r2_buckets": [
+    { "binding": "PHOTOS", "bucket_name": "the-color-code-photos" }
+  ],
+  "observability": { "enabled": true }
+}
