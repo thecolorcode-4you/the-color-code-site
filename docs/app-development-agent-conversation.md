@@ -291,3 +291,17 @@ The problem isn't the code: the API token Cloudflare uses for automatic builds h
 > hide them. fix everythign else and push to main
 
 *[The agent hid all 8 TODO boxes and the empty headshot circles (kept in the page code as the team's to-do list), and used its recommended answers to the three open decisions: first chapter night free during the pilot for a post, contact by Instagram DM, roadmap removed. It added a "For chapters" section on the home page, a "Can my chapter do a color night?" FAQ answer, and a price, contact and "running it" box on the chapter color night section. It hid the non-working review form, and rewrote the last visible "Decision 6" references. It scanned every page at phone size for visible team notes (none left) and re-ran the quiz, selfie and account tests (all pass). Full table in `docs/beta-round-3.md`. Then pushed to main.]*
+
+---
+
+## 11. Is the AI really using the photo?
+
+**Team:**
+> we'd liek to test the app without teh questions and just the selfie to see if they ai is actually using the photos. dont make any permanent changes we just want to test it.
+
+**Agent:** Suggested three tests that need no changes, because the AI is also told which season the answers point to and might just echo it: (1) a **contradiction test**, a real selfie with answers deliberately opposite to how you look, to see whether the reason describes the photo or the fake answers; (2) a **no-face photo** (a wall or a pet), which should come back "hard to read… based on your six answers"; (3) **two very different people giving identical answers**, which should get different results. Offered a temporary selfie-only test page if they still wanted one.
+
+**Team:**
+> the tests failed. we want to run a true selfie only mode
+
+*[The agent added a temporary, hidden team test page, `photo-test.html` (not linked anywhere, noindex), and a separate test endpoint (`/api/photo-test`, in its own file `src/photo-test.js`). It sends only the selfie, no answers and no quiz hint, to the same Cloudflare AI model, and shows the season, the reason, **what the AI says it sees** (what's in the photo, skin depth, undertone, eye and hair color, lighting) and its raw reply. The real quiz isn't changed. Tested with a stand-in AI: no answers are sent, the image is sent, the page shows everything; the real quiz endpoint's tests still pass. Pushed live for the team to test, to be removed afterward.]*
