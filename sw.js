@@ -1,7 +1,7 @@
 // The Color Code — service worker. Lets the installed app open offline and load fast.
 // Pages come from the network first (so updates show right away) and fall back to cache.
-var CACHE = 'tcc-v3';
-var CORE = ['/', '/index.html', '/start-your-analysis.html', '/result.html', '/styles.css?v=3', '/site.js', '/analysis.js', '/palettes.js', '/season-rules.js', '/config.js', '/supabase-client.js', '/account.html', '/account.js', '/manifest.json', '/assets/logo.png', '/assets/icon-192.png'];
+var CACHE = 'tcc-v4';
+var CORE = ['/', '/index.html', '/start-your-analysis.html', '/result.html', '/styles.css?v=4', '/site.js', '/analysis.js', '/palettes.js', '/season-rules.js', '/config.js', '/supabase-client.js', '/account.html', '/account.js', '/manifest.json', '/assets/logo.png', '/assets/icon-192.png'];
 
 self.addEventListener('install', function (e) {
   e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(CORE); }).then(function () { return self.skipWaiting(); }));

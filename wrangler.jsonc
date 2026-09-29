@@ -1,6 +1,7 @@
 {
   // The site's pages are served as-is from this folder. Only /api/* runs server code
-  // (src/worker.js), which sends selfies to Cloudflare's free image-reading AI.
+  // (src/worker.js), which sends selfies to Claude, Anthropic's AI.
+  // ANTHROPIC_API_KEY is a secret set in the Cloudflare dashboard, never in this file.
   "name": "the-color-code-site",
   "main": "src/worker.js",
   "compatibility_date": "2025-09-01",
@@ -9,6 +10,9 @@
     "binding": "ASSETS",
     "run_worker_first": ["/api/*"]
   },
-  "ai": { "binding": "AI" },
+  // Caps photo analyses per visitor, since each one is a paid call to Claude.
+  "ratelimits": [
+    { "name": "ANALYZE_LIMITER", "namespace_id": "1001", "simple": { "limit": 10, "period": 60 } }
+  ],
   "observability": { "enabled": true }
 }

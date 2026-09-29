@@ -14,7 +14,7 @@
 <meta name="apple-mobile-web-app-title" content="Color Code">
 <link rel="apple-touch-icon" href="assets/icon-180.png">
 <link rel="icon" type="image/png" href="assets/icon-192.png">
-<link rel="stylesheet" href="styles.css?v=3">
+<link rel="stylesheet" href="styles.css?v=4">
 </head>
 <body>
 <div class="banner">Tulane pilot — free during launch.</div>
@@ -62,13 +62,13 @@
     </section>
     <section>
       <h2 class="section-title">A selfie and six quick questions</h2>
-      <p class="lede">About a minute. The selfie is optional.</p>
+      <p class="lede">About a minute. Start with your selfie.</p>
 
       <p class="form-note" data-signed-in hidden style="margin-top:12px;"></p>
       <form class="form-block" data-analysis-form hidden>
         <fieldset class="quiz-q selfie-box" data-selfie>
-          <legend>Your selfie <span class="optional">(optional, but more accurate)</span></legend>
-          <p class="privacy-promise"><strong>What happens to your photo:</strong> it's used once, only to read your skin, eye and hair color, and deleted as soon as your result is back. It is never saved to your account, our database or anywhere else, and no one on our team sees it.</p>
+          <legend>Your selfie</legend>
+          <p class="privacy-promise"><strong>What happens to your photo:</strong> it's used once, only to read your skin, eye and hair color. Bella runs on Claude, Anthropic's AI, so your photo is sent to Anthropic for your analysis. We never save it to your account, our database or anywhere else, and no one on our team sees it.</p>
           <ul class="selfie-tips">
             <li>Face a window in daylight — no lamps or colored light</li>
             <li>No filter, and hair pulled back so your face is clear</li>
@@ -78,12 +78,12 @@
             <label class="btn-primary selfie-btn">Take a selfie<input type="file" accept="image/*" capture="user" data-selfie-input hidden></label>
             <label class="link-btn">Upload a photo instead<input type="file" accept="image/*" data-selfie-input hidden></label>
           </div>
-          <p class="form-note">Rather not share a photo? Skip this — your six answers alone still give you a season.</p>
+          <p class="form-error" data-selfie-error role="alert" hidden>Please add your selfie first.</p>
         </fieldset>
         <fieldset class="quiz-q"><legend>1. Look at the veins on your inner wrist in daylight. What color are they?</legend><label class="choice"><input type="radio" name="veins" value="blue_purple" required><span>Blue or purple</span></label><label class="choice"><input type="radio" name="veins" value="green" required><span>Green</span></label><label class="choice"><input type="radio" name="veins" value="mix" required><span>A mix / can't tell</span></label></fieldset><fieldset class="quiz-q"><legend>2. Which looks better on you?</legend><label class="choice"><input type="radio" name="jewelry" value="silver" required><span>Silver jewelry</span></label><label class="choice"><input type="radio" name="jewelry" value="gold" required><span>Gold jewelry</span></label><label class="choice"><input type="radio" name="jewelry" value="both" required><span>Both look good</span></label></fieldset><fieldset class="quiz-q"><legend>3. How does your skin react to the sun?</legend><label class="choice"><input type="radio" name="sun" value="burn" required><span>I burn easily</span></label><label class="choice"><input type="radio" name="sun" value="burn_then_tan" required><span>I burn, then tan</span></label><label class="choice"><input type="radio" name="sun" value="tan" required><span>I tan easily</span></label></fieldset><fieldset class="quiz-q"><legend>4. What is your natural hair color?</legend><label class="choice"><input type="radio" name="hair" value="platinum" required><span>Platinum / light blonde</span></label><label class="choice"><input type="radio" name="hair" value="golden" required><span>Golden / strawberry blonde</span></label><label class="choice"><input type="radio" name="hair" value="ash" required><span>Ash / dark blonde</span></label><label class="choice"><input type="radio" name="hair" value="light_brown" required><span>Light brown</span></label><label class="choice"><input type="radio" name="hair" value="medium_brown" required><span>Medium brown</span></label><label class="choice"><input type="radio" name="hair" value="dark_brown" required><span>Dark brown</span></label><label class="choice"><input type="radio" name="hair" value="black" required><span>Black</span></label><label class="choice"><input type="radio" name="hair" value="red" required><span>Red / auburn</span></label></fieldset><fieldset class="quiz-q"><legend>5. What color are your eyes?</legend><label class="choice"><input type="radio" name="eyes" value="light_blue_gray" required><span>Light blue / gray</span></label><label class="choice"><input type="radio" name="eyes" value="bright_blue" required><span>Bright blue</span></label><label class="choice"><input type="radio" name="eyes" value="green" required><span>Green</span></label><label class="choice"><input type="radio" name="eyes" value="hazel" required><span>Hazel</span></label><label class="choice"><input type="radio" name="eyes" value="light_brown" required><span>Light brown</span></label><label class="choice"><input type="radio" name="eyes" value="dark_brown" required><span>Dark brown</span></label><label class="choice"><input type="radio" name="eyes" value="black_brown" required><span>Very dark brown / black</span></label></fieldset><fieldset class="quiz-q"><legend>6. Which looks better near your face?</legend><label class="choice"><input type="radio" name="white" value="bright" required><span>Bright white</span></label><label class="choice"><input type="radio" name="white" value="ivory" required><span>Soft ivory / cream</span></label><label class="choice"><input type="radio" name="white" value="both" required><span>Both look fine</span></label></fieldset>
         <div class="checkbox-field">
           <input type="checkbox" id="consent-analysis" name="consent-analysis" required>
-          <label for="consent-analysis">I agree that my answers (and my photo, if I add one) will be used only to create my color analysis, and for no other purpose.</label>
+          <label for="consent-analysis">I'm 18 or older, and I agree that my selfie and answers will be used only to create my color analysis, and for no other purpose.</label>
         </div>
         <div class="checkbox-field">
           <input type="checkbox" id="consent-research" name="consent-research">

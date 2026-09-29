@@ -59,6 +59,7 @@ if (form) {
         form.querySelector('[data-selfie-img]').src = photo;
         preview.hidden = false;
         actions.hidden = true;
+        form.querySelector('[data-selfie-error]').hidden = true;
       } catch (err) {
         photo = null;
         alert('That photo couldn\'t be opened. Try taking it again.');
@@ -74,6 +75,12 @@ if (form) {
 
   form.addEventListener('submit', async function (e) {
     e.preventDefault();
+    if (!photo) {
+      var selfieError = form.querySelector('[data-selfie-error]');
+      selfieError.hidden = false;
+      form.querySelector('[data-selfie]').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
     var fd = new FormData(form);
     var a = {};
     QUESTIONS.forEach(function (k) { a[k] = fd.get(k); });
@@ -86,7 +93,7 @@ if (form) {
       btn.textContent = 'Bella is looking at your photo… (about 15 seconds)';
       try {
         var ctrl = new AbortController();
-        var timer = setTimeout(function () { ctrl.abort(); }, 45000);
+        var timer = setTimeout(function () { ctrl.abort(); }, 55000);
         var res = await fetch('/api/analyze', {
           method: 'POST', headers: { 'content-type': 'application/json' },
           body: JSON.stringify({ photo: photo, answers: a }), signal: ctrl.signal,
@@ -146,6 +153,25 @@ function shrinkPhoto(file) {
   });
 }
 
+// "Use your palette everywhere": how the season guides outfits, nails, hair, makeup and accessories.
+function usesSection(s) {
+  var warm = s.family === 'Spring' || s.family === 'Autumn';
+  var hair = warm
+    ? 'Stay with warm tones like golden, honey, caramel and copper. Show your stylist your season.'
+    : 'Stay with cool tones like ash, beige, cool brown and blue-black. Show your stylist your season.';
+  var metal = warm ? 'Gold, brass and rose gold' : 'Silver, platinum and white gold';
+  return '<section class="result-block"><h2 class="section-title">Use your palette everywhere</h2>' +
+    '<p class="lede">Your palette is a guide for every color choice you make, not just one outfit.</p>' +
+    '<div class="uses-grid">' +
+      '<div class="use-card"><h3>Outfits, all year</h3><p>Build outfits from your colors to wear. Lean on the lighter shades in spring and summer and the deeper ones in fall and winter, and keep the colors to avoid away from your face.</p></div>' +
+      '<div class="use-card"><h3>Nail color</h3><p>Pick polish from your lip shades or your colors to wear. They are already matched to your skin.</p><div class="swatch-grid swatch-grid-small">' + swatches([s.lip[0], s.wear[0], s.wear[1]]) + '</div></div>' +
+      '<div class="use-card"><h3>Hair color</h3><p>' + hair + '</p></div>' +
+      '<div class="use-card"><h3>Makeup</h3><p>Use the lip, blush and eye shades above when you shop, or bring this page to the makeup counter.</p></div>' +
+      '<div class="use-card"><h3>Accessories</h3><p>' + metal + ' flatter you most. Choose bags, scarves and glasses from your colors to wear.</p></div>' +
+    '</div>' +
+    '<p class="form-note" style="margin-top:14px;">General guidance based on your season.</p></section>';
+}
+
 // Result page: a saved result from the account, or the last one kept on this phone.
 var out = document.querySelector('[data-result]');
 if (out) {
@@ -166,7 +192,7 @@ if (out) {
   else savedNote = 'Your result is kept on this phone — come back to this page any time.';
 
   if (!r || !SEASONS[r.season]) {
-    out.innerHTML = '<div class="empty-state"><h3>No result yet</h3><p>Take the six-question quiz to get your season.</p><p style="margin-top:18px;"><a class="btn-primary" href="start-your-analysis.html">Start your analysis →</a></p></div>';
+    out.innerHTML = '<div class="empty-state"><h3>No result yet</h3><p>Take a selfie and answer six quick questions to get your season.</p><p style="margin-top:18px;"><a class="btn-primary" href="start-your-analysis.html">Start your analysis →</a></p></div>';
   } else {
     var s = SEASONS[r.season];
     out.innerHTML =
@@ -174,7 +200,7 @@ if (out) {
       '<h1 class="page-title">' + esc(r.season) + '</h1>' +
       '<p class="lede">' + esc(r.reason) + '</p>' +
       (PALETTES_ARE_PLACEHOLDER ? '<p class="example-flag" style="margin-top:18px;">Pilot palette — Bella\'s final shades coming soon</p>' : '') +
-      '<p class="method-line">' + (r.method === 'photo+quiz' ? 'Based on your selfie and your six answers. Your photo has been deleted.' : 'Based on your six answers.') + '</p>' +
+      '<p class="method-line">' + (r.method === 'photo+quiz' ? 'Based on your selfie and your six answers. We didn\'t save your photo.' : 'Based on your six answers.') + '</p>' +
       (r.note ? '<p class="form-msg" style="margin-top:14px;">' + esc(r.note) + '</p>' : '') +
       (r.teamNote ? '<div class="card" style="margin-top:22px;"><strong>Note from The Color Code team</strong><p style="margin-top:6px;">' + esc(r.teamNote) + '</p></div>' : '') +
       '<section class="result-block"><h2 class="section-title">Colors to wear</h2><div class="swatch-grid">' + swatches(s.wear) + '</div></section>' +
@@ -183,7 +209,8 @@ if (out) {
         '<h3 class="result-sub">Lip</h3><div class="swatch-grid">' + swatches(s.lip) + '</div>' +
         '<h3 class="result-sub">Blush</h3><div class="swatch-grid">' + swatches(s.blush) + '</div>' +
         '<h3 class="result-sub">Eye</h3><div class="swatch-grid">' + swatches(s.eye) + '</div></section>' +
+      usesSection(s) +
       '<section class="result-block"><p class="form-note">' + savedNote + '</p>' +
-      '<p style="margin-top:18px;"><a class="btn-primary" href="start-your-analysis.html">Retake the quiz</a></p></section>';
+      '<p style="margin-top:18px;"><a class="btn-primary" href="start-your-analysis.html">Retake the analysis</a></p></section>';
   }
 }
