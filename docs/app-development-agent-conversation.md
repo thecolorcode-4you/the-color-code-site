@@ -174,3 +174,19 @@ Pushing to `main` is safe before Supabase is ready: without the keys, the site b
 - *the result page says "Based on your selfie and your six answers. Your photo has been deleted." or "Based on your six answers."; the team screen records which method was used.*
 
 *Tested: the server function with a stand-in AI in seven cases (good answer, answer wrapped in extra text, invented season, unreadable photo, AI down, no photo, incomplete answers), all handled correctly. Then the whole flow at phone size using the real server code: the camera button opens the front camera; the photo was sent shrunk to about 15 KB; the result came back as Soft Autumn with a two-sentence reason; the photo was not left anywhere on the phone; no sideways scrolling, no errors.]*
+
+**Team:**
+> push to main
+
+*[Pushed to main. The Cloudflare build failed. The agent compared build results across commits and asked for the build log.]*
+
+**Team (pasted the Cloudflare build log):**
+> ✘ [ERROR] A request to the Cloudflare API (/accounts/…/workers/workers/the-color-code-site) failed. Authentication error [code: 10000] … It looks like you are authenticating Wrangler via a custom API token set in an environment variable. Please ensure it has the correct permissions for this operation. … ✘ [ERROR] A request to the Cloudflare API (/accounts) failed. Invalid access token [code: 9109] … Failed: error occurred while running deploy command
+
+**Agent:**
+The problem isn't the code: the API token Cloudflare uses for automatic builds has stopped working (`Invalid access token`). Fix: Cloudflare → the-color-code-site → Settings → Build → API token → edit → **Create new token** → Save; then Deployments → the latest build → **Retry build**.
+
+**Team:**
+> the build worked
+
+*[The agent confirmed on GitHub that the Cloudflare build for the selfie-analysis commit finished successfully. The live app now has the phone install, the selfie analysis, and the account pages, which switch on once the Supabase keys are added.]*
