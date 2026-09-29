@@ -33,6 +33,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 
 html { scroll-behavior: smooth; }
 
@@ -230,3 +231,24 @@ h2.section-title { font-size: 30px; margin-bottom: 8px; }
 .ios-share { font-weight: 600; color: var(--text); }
 .install-go { background: var(--accent); color: var(--on-accent); border: none; border-radius: 20px; padding: 9px 16px; font: 600 14px 'Manrope', sans-serif; cursor: pointer; }
 .install-x { background: none; border: none; font-size: 22px; line-height: 1; color: var(--text-muted); cursor: pointer; padding: 4px 6px; }
+
+/* Accounts */
+.wrap.narrow { max-width: 620px; }
+.preview-steps { margin: 16px 0 0; padding-left: 22px; display: grid; gap: 10px; max-width: 60ch; color: var(--text-muted); font-size: 15px; }
+.preview-steps strong { color: var(--text); }
+.gate-card { margin-top: 18px; max-width: 560px; background: var(--accent-tint); }
+.field input[type="password"] { width: 100%; padding: 11px 13px; border: 1px solid var(--border); border-radius: 3px; background: var(--bg); color: var(--text); font-family: 'Manrope', sans-serif; font-size: 16px; }
+.field input[type="email"] { font-size: 16px; }
+.form-msg { font-size: 14px; padding: 12px 14px; border-radius: 4px; background: var(--surface); }
+.form-msg.bad { background: #FBE9E7; color: #8F2D22; }
+.auth-links { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 22px; font-size: 14.5px; }
+.palette-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; text-decoration: none; margin-top: 12px; padding: 18px 20px; }
+.palette-season { font-family: 'Instrument Serif', serif; font-size: 22px; flex: 1; }
+.palette-note { font-size: 12px; font-weight: 600; color: var(--accent); width: 100%; }
+.season-counts { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 8px; }
+.season-counts span { font-size: 13px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 4px 11px; }
+.team-row { margin-top: 14px; padding: 18px; }
+.team-row-head { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.team-answers { margin: 10px 0 12px; padding-left: 18px; font-size: 13.5px; color: var(--text-muted); }
+.team-row textarea { width: 100%; min-height: 64px; margin: 6px 0 8px; padding: 9px 11px; border: 1px solid var(--border); border-radius: 3px; font: 15px 'Manrope', sans-serif; background: var(--bg); }
+.btn-small { background: var(--accent); color: var(--on-accent); border: none; border-radius: 3px; padding: 8px 14px; font: 600 13.5px 'Manrope', sans-serif; cursor: pointer; }

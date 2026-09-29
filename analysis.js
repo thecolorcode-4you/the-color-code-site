@@ -2,10 +2,11 @@
 // Picks one of the twelve seasons from the six quiz answers using fixed rules
 // (same answers always give the same season). Colors come only from palettes.js.
 import { SEASONS, PALETTES_ARE_PLACEHOLDER } from './palettes.js';
+import { accountsOn, supabase, currentUser, esc } from './supabase-client.js';
 
 var STORE_KEY = 'tcc_last_result';
 
-var LABELS = {
+export var LABELS = {
   veins: { blue_purple: 'blue or purple veins', green: 'green veins', mix: 'a mix of blue and green veins' },
   jewelry: { silver: 'silver jewelry', gold: 'gold jewelry', both: 'both gold and silver' },
   sun: { burn: 'burning easily in the sun', burn_then_tan: 'burning, then tanning', tan: 'tanning easily' },
@@ -73,44 +74,89 @@ function swatches(list) {
   }).join('');
 }
 
-// Quiz page
+// Quiz page: preview for everyone, the quiz itself once logged in.
 var form = document.querySelector('[data-analysis-form]');
+var sample = document.querySelector('[data-preview-sample]');
+if (sample) {
+  var ex = SEASONS['Soft Autumn'];
+  sample.innerHTML = '<span class="example-flag">Example result</span><h3 style="font-size:22px;">Soft Autumn</h3>' +
+    '<p class="form-note" style="margin-top:4px;">' + ex.summary + '</p>' +
+    '<div class="swatch-grid">' + swatches(ex.wear.slice(0, 4)) + '</div>' +
+    '<p class="form-note" style="margin-top:12px;">Plus a few colors to avoid and your lip, blush and eye shades.</p>';
+}
+
 if (form) {
-  form.addEventListener('submit', function (e) {
+  var user = await currentUser();
+  var gate = document.querySelector('[data-account-gate]');
+  var who = document.querySelector('[data-signed-in]');
+  if (!accountsOn || user) {
+    form.hidden = false;
+    if (gate) gate.hidden = true;
+    if (user && who) { who.hidden = false; who.innerHTML = 'Signed in as <strong>' + esc(user.email) + '</strong> — your result will be saved to <a href="account.html">your account</a>.'; }
+  } else {
+    form.hidden = true;
+    if (gate) gate.hidden = false;
+  }
+
+  form.addEventListener('submit', async function (e) {
     e.preventDefault();
     var fd = new FormData(form);
     var a = {};
     ['veins', 'jewelry', 'sun', 'hair', 'eyes', 'white'].forEach(function (k) { a[k] = fd.get(k); });
     var season = pickSeason(a);
-    save({ season: season, reason: reasonFor(season, a), answers: a, at: new Date().toISOString() });
+    var result = { season: season, reason: reasonFor(season, a), answers: a, at: new Date().toISOString() };
+    save(result);
     track('intake_completed');
     var btn = form.querySelector('button[type="submit"]');
     btn.disabled = true;
     btn.textContent = 'Bella is reading your answers…';
-    setTimeout(function () { window.location.href = 'result.html'; }, 900);
+    var next = 'result.html';
+    if (supabase && user) {
+      var ins = await supabase.from('analyses').insert({
+        season: season, reason: result.reason, answers: a, method: 'quiz',
+        research_consent: fd.get('consent-research') === 'on',
+      }).select('id').single();
+      if (ins.error) { console.error(ins.error); next = 'result.html?unsaved=1'; }
+      else next = 'result.html?id=' + ins.data.id;
+    }
+    setTimeout(function () { window.location.href = next; }, 600);
   });
 }
 
-// Result page
+// Result page: a saved result from the account, or the last one kept on this phone.
 var out = document.querySelector('[data-result]');
 if (out) {
-  var r = load();
+  var params = new URLSearchParams(location.search);
+  var r = null, savedNote = '';
+  var signedIn = await currentUser();
+  if (params.get('id') && supabase) {
+    var got = await supabase.from('analyses').select('*').eq('id', params.get('id')).maybeSingle();
+    if (got.data) r = { season: got.data.season, reason: got.data.reason, note: got.data.team_note };
+  }
+  if (!r) r = load();
+  if (params.get('id') && r) savedNote = 'Saved to <a href="account.html">your account</a> — log in from any phone to see it again.';
+  else if (params.get('unsaved')) savedNote = 'We couldn\'t save this to your account just now, but it\'s kept on this phone. Try again later from <a href="start-your-analysis.html">the quiz</a>.';
+  else if (accountsOn && !signedIn) savedNote = 'Kept on this phone. <a href="account.html?mode=signup">Create a free account</a> to save it and open it from any phone.';
+  else if (accountsOn) savedNote = 'Kept on this phone. Your saved results are in <a href="account.html">your account</a>.';
+  else savedNote = 'Your result is kept on this phone — come back to this page any time.';
+
   if (!r || !SEASONS[r.season]) {
     out.innerHTML = '<div class="empty-state"><h3>No result yet</h3><p>Take the six-question quiz to get your season.</p><p style="margin-top:18px;"><a class="btn-primary" href="start-your-analysis.html">Start your analysis →</a></p></div>';
   } else {
     var s = SEASONS[r.season];
     out.innerHTML =
       '<p class="eyebrow">Your season</p>' +
-      '<h1 class="page-title">' + r.season + '</h1>' +
-      '<p class="lede">' + r.reason + '</p>' +
+      '<h1 class="page-title">' + esc(r.season) + '</h1>' +
+      '<p class="lede">' + esc(r.reason) + '</p>' +
       (PALETTES_ARE_PLACEHOLDER ? '<p class="example-flag" style="margin-top:18px;">Pilot palette — Bella\'s final shades coming soon</p>' : '') +
+      (r.note ? '<div class="card" style="margin-top:22px;"><strong>Note from The Color Code team</strong><p style="margin-top:6px;">' + esc(r.note) + '</p></div>' : '') +
       '<section class="result-block"><h2 class="section-title">Colors to wear</h2><div class="swatch-grid">' + swatches(s.wear) + '</div></section>' +
       '<section class="result-block"><h2 class="section-title">A few to avoid</h2><div class="swatch-grid">' + swatches(s.avoid) + '</div></section>' +
       '<section class="result-block"><h2 class="section-title">Your makeup shades</h2>' +
         '<h3 class="result-sub">Lip</h3><div class="swatch-grid">' + swatches(s.lip) + '</div>' +
         '<h3 class="result-sub">Blush</h3><div class="swatch-grid">' + swatches(s.blush) + '</div>' +
         '<h3 class="result-sub">Eye</h3><div class="swatch-grid">' + swatches(s.eye) + '</div></section>' +
-      '<section class="result-block"><p class="form-note">Your result is kept on this phone — come back to this page any time. Saving it to a free account so you can open it from any phone is coming soon.</p>' +
+      '<section class="result-block"><p class="form-note">' + savedNote + '</p>' +
       '<p style="margin-top:18px;"><a class="btn-primary" href="start-your-analysis.html">Retake the quiz</a></p></section>';
   }
 }
