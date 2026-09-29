@@ -1,9 +1,9 @@
 // The Color Code — server function for selfie analysis.
 //
-// POST /api/analyze  { photo: "data:image/jpeg;base64,...", answers: {six quiz answers} }
+// POST /api/analyze  { photo: "data:image/jpeg;base64,...", answers: {seven quiz answers} }
 // Cloudflare's free image AI DESCRIBES the selfie (undertone, depth, brightness, contrast,
 // eye and hair color). The season is then chosen by the fixed rules in season-rules.js from
-// that description plus the six answers, so the result is consistent and never contradicts
+// that description plus the seven answers, so the result is consistent and never contradicts
 // what was seen. The AI never sees the answers.
 //
 // Privacy: the photo only exists in memory for this one request. It is never written to
@@ -41,7 +41,7 @@ async function analyze(request, env) {
   try { body = await request.json(); } catch (e) { return json({ error: 'Bad request' }, 400); }
 
   var answers = cleanAnswers(body && body.answers);
-  if (!answers) return json({ error: 'Please answer all six questions.' }, 400);
+  if (!answers) return json({ error: 'Please answer all seven questions.' }, 400);
 
   var quizSeason = pickSeason(answers);
   var fallback = { season: quizSeason, reason: reasonFor(quizSeason, answers), method: 'quiz', photoUsed: false };

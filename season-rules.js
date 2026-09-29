@@ -1,9 +1,9 @@
-// The Color Code — the six quiz questions and the fixed season rules.
+// The Color Code — the seven quiz questions and the fixed season rules.
 // Shared by the phone (quiz-only results) and the server, which combines them with what
 // the AI saw in the selfie. The AI only describes the photo; these rules choose the season.
 import { SEASONS } from './palettes.js';
 
-export var QUESTIONS = ['veins', 'jewelry', 'sun', 'hair', 'eyes', 'white'];
+export var QUESTIONS = ['veins', 'jewelry', 'sun', 'hair', 'eyes', 'white', 'colors'];
 
 // Returns the answers if every one is a known choice, otherwise null.
 export function cleanAnswers(raw) {
@@ -24,9 +24,10 @@ export var LABELS = {
   hair: { platinum: 'platinum or light blonde hair', golden: 'golden or strawberry blonde hair', ash: 'ash or dark blonde hair', light_brown: 'light brown hair', medium_brown: 'medium brown hair', dark_brown: 'dark brown hair', black: 'black hair', red: 'red or auburn hair' },
   eyes: { light_blue_gray: 'light blue or gray eyes', bright_blue: 'bright blue eyes', green: 'green eyes', hazel: 'hazel eyes', light_brown: 'light brown eyes', dark_brown: 'dark brown eyes', black_brown: 'very dark brown eyes' },
   white: { bright: 'bright white', ivory: 'soft ivory', both: 'white or ivory alike' },
+  colors: { bold: 'bold, saturated colors', soft: 'soft, dusty colors', both: 'both bold and soft colors' },
 };
 
-// Scores from the six answers. t: cool (−) to warm (+). d: light (−) to deep (+).
+// Scores from the seven answers. t: cool (−) to warm (+). d: light (−) to deep (+).
 // c: soft/muted (−) to bright/clear (+).
 export function scoreAnswers(a) {
   var t = 0;
@@ -48,6 +49,8 @@ export function scoreAnswers(a) {
   c += { ash: -1, light_brown: -1, medium_brown: -0.5, black: 1 }[a.hair] || 0;
   // High contrast between dark hair and light eyes reads as bright.
   if ((a.hair === 'black' || a.hair === 'dark_brown') && (a.eyes === 'bright_blue' || a.eyes === 'light_blue_gray' || a.eyes === 'green')) c += 1.5;
+  // The most direct brightness question: bold, saturated colors vs soft, dusty ones.
+  c += { bold: 1.5, soft: -1.5, both: 0 }[a.colors] || 0;
 
   return { t: t, d: d, c: c, tieWarm: a.hair === 'golden' || a.hair === 'red' };
 }
@@ -127,7 +130,8 @@ export function reasonFor(season, a) {
   var signs = [VEIN_PHRASE[a.veins], JEWELRY_PHRASE[a.jewelry], WHITE_PHRASE[a.white]].filter(Boolean);
   var first = signs.slice(0, -1).join(', ') + ' and ' + signs[signs.length - 1] + ' point to a ' + temp + ' undertone.';
   first = first.charAt(0).toUpperCase() + first.slice(1);
-  var second = 'Paired with your ' + LABELS.hair[a.hair] + ' and ' + LABELS.eyes[a.eyes] + ', that places you in ' + season + ': ' + s.summary.charAt(0).toLowerCase() + s.summary.slice(1);
+  var clarity = a.colors === 'bold' ? ', and the way bold, saturated colors suit you' : a.colors === 'soft' ? ', and the way soft, dusty colors suit you' : '';
+  var second = 'Paired with your ' + LABELS.hair[a.hair] + ' and ' + LABELS.eyes[a.eyes] + clarity + ', that places you in ' + season + ': ' + s.summary.charAt(0).toLowerCase() + s.summary.slice(1);
   return first + ' ' + second;
 }
 

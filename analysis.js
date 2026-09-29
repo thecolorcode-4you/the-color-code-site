@@ -1,5 +1,5 @@
 // The Color Code — quiz analysis and result page.
-// Picks one of the twelve seasons from the six quiz answers using fixed rules
+// Picks one of the twelve seasons from the seven quiz answers using fixed rules
 // (same answers always give the same season). Colors come only from palettes.js.
 import { SEASONS, PALETTES_ARE_PLACEHOLDER } from './palettes.js';
 import { accountsOn, supabase, currentUser, esc } from './supabase-client.js';
@@ -180,7 +180,7 @@ if (out) {
   else savedNote = 'Your result is kept on this phone — come back to this page any time.';
 
   if (!r || !SEASONS[r.season]) {
-    out.innerHTML = '<div class="empty-state"><h3>No result yet</h3><p>Take the six-question quiz to get your season.</p><p style="margin-top:18px;"><a class="btn-primary" href="start-your-analysis.html">Start your analysis →</a></p></div>';
+    out.innerHTML = '<div class="empty-state"><h3>No result yet</h3><p>Take the seven-question quiz to get your season.</p><p style="margin-top:18px;"><a class="btn-primary" href="start-your-analysis.html">Start your analysis →</a></p></div>';
   } else {
     var s = SEASONS[r.season];
     out.innerHTML =
@@ -188,7 +188,7 @@ if (out) {
       '<h1 class="page-title">' + esc(r.season) + '</h1>' +
       '<p class="lede">' + esc(r.reason) + '</p>' +
       (PALETTES_ARE_PLACEHOLDER ? '<p class="example-flag" style="margin-top:18px;">Pilot palette — Bella is still refining these shades</p>' : '') +
-      '<p class="method-line">' + (r.method === 'photo+quiz' ? 'Based on your selfie and your six answers. Your photo has been deleted.' : 'Based on your six answers.') + '</p>' +
+      '<p class="method-line">' + (r.method === 'photo+quiz' ? 'Based on your selfie and your seven answers. Your photo has been deleted.' : 'Based on your seven answers.') + '</p>' +
       (r.note ? '<p class="form-msg" style="margin-top:14px;">' + esc(r.note) + '</p>' : '') +
       (r.teamNote ? '<div class="card" style="margin-top:22px;"><strong>Note from The Color Code team</strong><p style="margin-top:6px;">' + esc(r.teamNote) + '</p></div>' : '') +
       '<section class="result-block"><h2 class="section-title">Colors to wear</h2><div class="swatch-grid">' + swatches(s.wear) + '</div></section>' +

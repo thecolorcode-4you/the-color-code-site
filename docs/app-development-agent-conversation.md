@@ -330,3 +330,20 @@ The problem isn't the code: the API token Cloudflare uses for automatic builds h
 - ***The season is chosen by fixed rules** (`season-rules.js`) combining what the AI saw with the six answers. Photo readings count for more than one answer; an "unsure" undertone counts for half, with a note suggesting a window and bare skin. Red and golden hair count for less toward warmth in the answers too.*
 - *The reason is written from what was seen, in "you/your."*
 - *Tested with a stand-in AI: the tester's reading (cool, bright, high contrast) gives **Bright Winter**; all 54 possible selfie-only readings give a season matching the undertone seen (never cool → Autumn); no face, bad replies and AI errors fall back to the answers with a note; the AI never receives answers. Honest limit: if the real AI still reads her as muted, she gets Soft Summer or True Summer instead, so the brightness reading has to be checked with real photos. Also found: the six questions alone give typical Bright Winter answers True Summer, because only one question (bright white vs. ivory) measures brightness.]*
+
+**Agent (after the fix went live):** Asked the team to re-test on the selfie-only page and check the "clarity" line: bright should give Bright Winter; if it still says muted, the AI is misjudging brightness and a different model or better lighting instructions may be needed. Suggested a seventh question for Whitney and Bella to decide: "Do bold, saturated colors or soft, dusty colors look better on you?"
+
+---
+
+## 12. Final palettes and a seventh question
+
+**Team:**
+> bella and whitney have confirmed that the 12 color pallets are real and final. make the fixes you said.
+
+*[The agent:*
+- *marked the 12 palettes **final** in `palettes.js` (confirmed by Bella and Whitney, including each season's avoid colors and reasons), which removes the "Pilot palette — Bella is still refining these shades" label from every result;*
+- *added **question 7: "Which look better on you? Bold, saturated colors (bright red, cobalt, emerald) / Soft, dusty colors (dusty rose, sage, taupe) / Both / not sure"**. It counts toward brightness only, and the reason mentions it ("…and the way bold, saturated colors suit you…");*
+- *changed "six questions" to "seven questions" everywhere customers read it (home, How It Works, Start Your Analysis, FAQ, result page, My Account) and in the code;*
+- *gave the four example people a question 7 answer and checked their seasons didn't change (Maddie Light Summer, Aaliyah Deep Autumn, Priya Deep Winter, Chloe Light Spring).*
+
+*Checked: all 24,192 answer combinations give clean wording, and all 12 seasons are reachable. **The Bright Winter tester answering honestly now gets Bright Winter from the quiz alone**, and with a selfie too if the AI reads her as bright (if the AI misreads her as muted, the combined result is True Summer). The selfie, account and quiz flows pass at phone size.]*

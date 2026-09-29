@@ -79,7 +79,7 @@ async function myPalettes(user) {
   var list = root.querySelector('[data-list]');
   if (res.error) { list.innerHTML = '<p class="form-msg bad">We couldn\'t load your palettes. Please refresh.</p>'; return; }
   if (!res.data.length) {
-    list.innerHTML = '<div class="empty-state"><h3>No palettes yet</h3><p>Take the six-question quiz — your result will be saved here.</p><p style="margin-top:18px;"><a class="btn-primary" href="start-your-analysis.html">Start your analysis →</a></p></div>';
+    list.innerHTML = '<div class="empty-state"><h3>No palettes yet</h3><p>Take the seven-question quiz — your result will be saved here.</p><p style="margin-top:18px;"><a class="btn-primary" href="start-your-analysis.html">Start your analysis →</a></p></div>';
     return;
   }
   list.innerHTML = res.data.map(function (r) {

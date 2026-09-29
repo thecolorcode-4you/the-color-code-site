@@ -1,15 +1,13 @@
 // The Color Code — the twelve season palettes.
 //
-// This one file is the only place colors come from. The AI only ever picks a season
-// name from SEASON_NAMES; every swatch a customer sees is read from here, so the
-// AI can never invent a color.
+// This one file is the only place colors come from. The AI never picks or invents a
+// color: the season rules choose a season name, and every swatch a customer sees is
+// read from here.
 //
-// PLACEHOLDER: these palettes are standard twelve-season starting points written by
-// web-development so the app works end to end. Bella (color-analysis) is replacing
-// them with the real palettes from her color theory. When she does, change only the
-// hex values and names below and set PALETTES_ARE_PLACEHOLDER to false.
+// FINAL: confirmed as real and final by Bella and Whitney (color analysis), Sept 2026,
+// including each season's avoid colors and the one-line reason for them.
 
-export const PALETTES_ARE_PLACEHOLDER = true;
+export const PALETTES_ARE_PLACEHOLDER = false;
 
 export const SEASONS = {
   'Light Spring': {
