@@ -1,8 +1,7 @@
-// The Color Code — quiz analysis and result page.
-// Picks one of the twelve seasons from the six quiz answers using fixed rules
-// (same answers always give the same season). Colors come only from palettes.js.
+// The Color Code — selfie + quiz analysis and the result page.
+// Bella (Claude) picks the season on the server; every color shown comes only from palettes.js.
 import { SEASONS, PALETTES_ARE_PLACEHOLDER } from './palettes.js';
-import { QUIZ_KEYS, pickSeason, reasonFor } from './season-rules.js';
+import { QUIZ_KEYS, reasonFor } from './season-rules.js';
 
 var STORE_KEY = 'tcc_last_result';
 
@@ -20,27 +19,128 @@ function swatches(list) {
   }).join('');
 }
 
-// Quiz page
+// Quiz page: step 1 is the selfie, step 2 the six questions. The photo stays in memory on the
+// page until it's sent with the answers; it's never saved on the phone.
+var MAX_SIDE = 1568; // larger photos are shrunk; Claude doesn't need more detail than this
+
+function shrinkPhoto(file) {
+  return new Promise(function (resolve, reject) {
+    var url = URL.createObjectURL(file);
+    var img = new Image();
+    img.onload = function () {
+      var scale = Math.min(1, MAX_SIDE / Math.max(img.naturalWidth, img.naturalHeight));
+      var canvas = document.createElement('canvas');
+      canvas.width = Math.round(img.naturalWidth * scale);
+      canvas.height = Math.round(img.naturalHeight * scale);
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      URL.revokeObjectURL(url);
+      canvas.toBlob(function (blob) {
+        if (blob) resolve(blob); else reject(new Error('shrink failed'));
+      }, 'image/jpeg', 0.88);
+    };
+    img.onerror = function () {
+      URL.revokeObjectURL(url);
+      reject(new Error('unreadable'));
+    };
+    img.src = url;
+  });
+}
+
+function showMessage(el, message) {
+  el.textContent = message;
+  el.hidden = !message;
+}
+
 var form = document.querySelector('[data-analysis-form]');
 if (form) {
+  var photoStep = document.querySelector('[data-photo-step]');
+  var quizStep = document.querySelector('[data-quiz-step]');
+  var photoInput = document.getElementById('photo');
+  var preview = document.querySelector('[data-photo-preview]');
+  var photoLabel = document.querySelector('[data-photo-label]');
+  var photoError = document.querySelector('[data-photo-error]');
+  var formError = form.querySelector('[data-form-error]');
+  var continueBox = document.querySelector('[data-photo-continue]');
+  var photoBlob = null;
+
+  function showStep(step) {
+    photoStep.hidden = step !== 'photo';
+    quizStep.hidden = step !== 'quiz';
+    (step === 'photo' ? photoStep : quizStep).scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  photoInput.addEventListener('change', function () {
+    var file = photoInput.files[0];
+    if (!file) return;
+    showMessage(photoError, '');
+    shrinkPhoto(file).then(function (blob) {
+      photoBlob = blob;
+      preview.src = URL.createObjectURL(blob);
+      preview.hidden = false;
+      photoLabel.textContent = 'Use a different photo';
+      continueBox.hidden = false;
+      track('photo_added');
+    }).catch(function () {
+      photoBlob = null;
+      showMessage(photoError, "We couldn't open that photo. Please try another one, or take a new selfie.");
+    });
+    photoInput.value = '';
+  });
+
+  document.querySelector('[data-to-quiz]').addEventListener('click', function () { showStep('quiz'); });
+  document.querySelector('[data-back-to-photo]').addEventListener('click', function () { showStep('photo'); });
+
   form.addEventListener('submit', function (e) {
     e.preventDefault();
+    showMessage(formError, '');
+    if (!photoBlob) {
+      showStep('photo');
+      return showMessage(photoError, 'Please add your selfie first.');
+    }
     var fd = new FormData(form);
     var a = {};
     QUIZ_KEYS.forEach(function (k) { a[k] = fd.get(k); });
-    var season = pickSeason(a);
-    save({
-      season: season,
-      reason: reasonFor(season, a),
-      answers: a,
-      consentResearch: fd.get('consent-research') === 'on',
-      at: new Date().toISOString(),
-    });
-    track('intake_completed');
+
+    var body = new FormData();
+    body.append('photo', photoBlob, 'selfie.jpg');
+    body.append('answers', JSON.stringify(a));
+    body.append('consent_analysis', 'yes');
+    if (fd.get('consent-research') === 'on') body.append('consent_research', 'yes');
+
     var btn = form.querySelector('button[type="submit"]');
     btn.disabled = true;
-    btn.textContent = 'Bella is reading your answers…';
-    setTimeout(function () { window.location.href = 'result.html'; }, 900);
+    btn.textContent = 'Bella is reading your photo…';
+
+    fetch('/api/analyze', { method: 'POST', credentials: 'same-origin', body: body })
+      .then(function (res) {
+        return res.json().catch(function () { return {}; }).then(function (data) {
+          if (res.status === 422 && data.retake) {
+            showStep('photo');
+            showMessage(photoError, data.reason + ' Your answers are kept.');
+            track('photo_retake');
+            return;
+          }
+          if (!res.ok) throw new Error(data.error || 'Something went wrong. Please try again.');
+          save({
+            id: data.id,
+            season: data.season,
+            explanation: data.explanation,
+            source: data.source,
+            answers: a,
+            savedId: data.saved ? data.id : null,
+            at: new Date().toISOString(),
+          });
+          track('intake_completed');
+          window.location.href = 'result.html';
+        });
+      })
+      .catch(function (err) {
+        showMessage(formError, err.message || 'Something went wrong. Please try again.');
+      })
+      .finally(function () {
+        btn.disabled = false;
+        btn.textContent = 'Get my season →';
+      });
   });
 }
 
@@ -52,16 +152,22 @@ function getAccount() {
 }
 
 function saveToAccount(r) {
-  return fetch('/api/results', {
+  return fetch('/api/results/save', {
     method: 'POST',
     credentials: 'same-origin',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ answers: r.answers, consent_analysis: true, consent_research: !!r.consentResearch }),
+    body: JSON.stringify({ id: r.id }),
   }).then(function (res) {
     return res.json().catch(function () { return {}; }).then(function (body) {
       if (!res.ok) throw new Error(body.error || 'We couldn\'t save your palette. Please try again.');
       return body;
     });
+  });
+}
+
+function escapeHtml(text) {
+  return String(text).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
   });
 }
 
@@ -88,7 +194,7 @@ function renderResult(out, r) {
   out.innerHTML =
     '<p class="eyebrow">Your season</p>' +
     '<h1 class="page-title">' + r.season + '</h1>' +
-    '<p class="lede">' + reasonFor(r.season, r.answers) + '</p>' +
+    '<p class="lede">' + escapeHtml(r.explanation || reasonFor(r.season, r.answers)) + '</p>' +
     (PALETTES_ARE_PLACEHOLDER ? '<p class="example-flag" style="margin-top:18px;">Pilot palette — Bella\'s final shades coming soon</p>' : '') +
     '<div data-save-box></div>' +
     '<section class="result-block"><h2 class="section-title">Colors to wear</h2><div class="swatch-grid">' + swatches(s.wear) + '</div></section>' +
@@ -98,7 +204,7 @@ function renderResult(out, r) {
       '<h3 class="result-sub">Blush</h3><div class="swatch-grid">' + swatches(s.blush) + '</div>' +
       '<h3 class="result-sub">Eye</h3><div class="swatch-grid">' + swatches(s.eye) + '</div></section>' +
     usesSection(s) +
-    '<section class="result-block"><p><a class="btn-secondary" href="start-your-analysis.html">Retake the quiz</a></p></section>';
+    '<section class="result-block"><p><a class="btn-secondary" href="start-your-analysis.html">Retake the analysis</a></p></section>';
   track('result_viewed');
   return out.querySelector('[data-save-box]');
 }
@@ -126,17 +232,19 @@ if (out) {
 
     var r = load();
     if (!r || !SEASONS[r.season]) {
-      out.innerHTML = '<div class="empty-state"><h3>No result yet</h3><p>Take the six-question quiz to get your season.</p><p style="margin-top:18px;"><a class="btn-primary" href="start-your-analysis.html">Start your analysis →</a></p></div>';
+      out.innerHTML = '<div class="empty-state"><h3>No result yet</h3><p>Take a selfie and answer six quick questions to get your season.</p><p style="margin-top:18px;"><a class="btn-primary" href="start-your-analysis.html">Start your analysis →</a></p></div>';
       return;
     }
     var box = renderResult(out, r);
 
     if (r.savedId) {
       saveBox(box, SAVED_HTML);
+    } else if (!r.id) {
+      saveBox(box, '<h3>Want to keep your palette?</h3><p>Retake the analysis with a selfie, then save it to a free account.</p>');
     } else if (account) {
       saveBox(box, '<h3>Saving to your account…</h3>');
       saveToAccount(r).then(function (res) {
-        r.savedId = res.id;
+        r.savedId = r.id;
         save(r);
         track('result_saved');
         saveBox(box, SAVED_HTML);

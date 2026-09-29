@@ -16,5 +16,10 @@
   "d1_databases": [
     { "binding": "DB", "database_name": "the-color-code-db" }
   ],
+  // Caps photo analyses per visitor, since each one is a paid call to Claude.
+  "ratelimits": [
+    { "name": "ANALYZE_LIMITER", "namespace_id": "1001", "simple": { "limit": 10, "period": 60 } }
+  ],
+  // ANTHROPIC_API_KEY is a secret set in the Cloudflare dashboard, never in this file.
   "observability": { "enabled": true }
 }

@@ -1,11 +1,16 @@
-// The Color Code — backend for free accounts and saved quiz results.
+// The Color Code — backend for Bella's photo analysis, free accounts and saved results.
 //
 // Static pages in /public are served directly by Cloudflare. Only /api/* requests reach this
 // Worker (see run_worker_first in wrangler.jsonc).
 //
-// Storage: DB (D1) — users, sessions and saved quiz results. No photos are collected.
+// Storage: DB (D1) — users, sessions and analysis results. Photos are sent to Claude for the
+// analysis and never stored anywhere.
 
-import { QUIZ_KEYS, pickSeason, validAnswers } from '../public/season-rules.js';
+import { QUIZ_KEYS, pickSeason, reasonFor, validAnswers } from '../public/season-rules.js';
+import { analyzePhoto } from './analyze.js';
+
+const MAX_PHOTO_BYTES = 5 * 1024 * 1024; // Claude's per-image limit; the page shrinks photos first
+const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 const SESSION_COOKIE = 'tcc_session';
 const SESSION_DAYS = 30;
@@ -29,10 +34,14 @@ const SCHEMA = [
     expires_at TEXT NOT NULL
   )`,
   `CREATE INDEX IF NOT EXISTS sessions_user ON sessions (user_id)`,
+  // user_id is empty until the person saves the result to a free account.
   `CREATE TABLE IF NOT EXISTS results (
     id TEXT PRIMARY KEY,
-    user_id TEXT NOT NULL,
+    user_id TEXT,
     season TEXT NOT NULL,
+    explanation TEXT NOT NULL,
+    source TEXT NOT NULL,
+    observations TEXT,
     answers TEXT NOT NULL,
     consent_analysis INTEGER NOT NULL,
     consent_research INTEGER NOT NULL,
@@ -81,7 +90,8 @@ async function route(request, env, url) {
   if (pathname === '/api/login' && method === 'POST') return login(request, env);
   if (pathname === '/api/logout' && method === 'POST') return logout(request, env);
   if (pathname === '/api/me' && method === 'GET') return me(request, env);
-  if (pathname === '/api/results' && method === 'POST') return saveResult(request, env);
+  if (pathname === '/api/analyze' && method === 'POST') return analyze(request, env);
+  if (pathname === '/api/results/save' && method === 'POST') return saveResult(request, env);
 
   return json({ error: 'Not found.' }, 404);
 }
@@ -143,7 +153,7 @@ async function me(request, env) {
   if (!user) return json({ error: 'Not signed in.' }, 401);
 
   const { results } = await env.DB.prepare(
-    'SELECT id, season, answers, created_at FROM results WHERE user_id = ? ORDER BY created_at DESC'
+    'SELECT id, season, explanation, answers, created_at FROM results WHERE user_id = ? ORDER BY created_at DESC'
   ).bind(user.id).all();
 
   return json({
@@ -151,39 +161,100 @@ async function me(request, env) {
     results: results.map((r) => ({
       id: r.id,
       season: r.season,
+      explanation: r.explanation,
       answers: JSON.parse(r.answers),
       created_at: r.created_at,
     })),
   });
 }
 
-// ---------- Quiz results ----------
+// ---------- Analysis ----------
 
-// Saves a quiz result to the signed-in account. The season is worked out again here from the
-// answers with the same rules the quiz uses, so a saved season always matches its answers.
+// Takes the selfie plus the six quiz answers and returns a season. Claude reads the photo; if
+// Claude can't be reached, the quiz's fixed rules pick the season so nobody gets stuck. The
+// photo is never written anywhere. No account is needed; the result can be saved later.
+async function analyze(request, env) {
+  if (env.ANALYZE_LIMITER) {
+    const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+    const { success } = await env.ANALYZE_LIMITER.limit({ key: ip });
+    if (!success) return json({ error: 'Too many tries in a row. Please wait a minute and try again.' }, 429);
+  }
+
+  let form;
+  try {
+    form = await request.formData();
+  } catch {
+    return json({ error: "We couldn't read that. Please try again." }, 400);
+  }
+
+  const photo = form.get('photo');
+  if (!photo || typeof photo === 'string' || photo.size === 0) {
+    return json({ error: 'Please add your selfie first.' }, 400);
+  }
+  const photoType = (photo.type || '').toLowerCase();
+  if (!PHOTO_TYPES.includes(photoType)) {
+    return json({ error: 'Please use a JPG, PNG or WebP photo.' }, 400);
+  }
+  if (photo.size > MAX_PHOTO_BYTES) {
+    return json({ error: 'That photo is too large. Please try another one.' }, 400);
+  }
+
+  if (form.get('consent_analysis') !== 'yes') {
+    return json({ error: 'Please agree to how your photo and answers will be used.' }, 400);
+  }
+  let answers;
+  try {
+    answers = JSON.parse(form.get('answers') || '');
+  } catch {
+    answers = null;
+  }
+  if (!validAnswers(answers)) {
+    return json({ error: 'Please answer all six questions.' }, 400);
+  }
+  const clean = {};
+  for (const key of QUIZ_KEYS) clean[key] = answers[key];
+
+  const ai = await analyzePhoto(env, new Uint8Array(await photo.arrayBuffer()), photoType, clean);
+  if (ai.status === 'retake') return json({ retake: true, reason: ai.reason }, 422);
+
+  let season, explanation, source, observations = null;
+  if (ai.status === 'ok') {
+    ({ season, explanation, observations } = ai);
+    source = 'ai';
+  } else {
+    season = pickSeason(clean);
+    explanation = reasonFor(season, clean);
+    source = 'rules';
+  }
+
+  const user = await currentUser(request, env);
+  const id = crypto.randomUUID();
+  await env.DB.prepare(
+    `INSERT INTO results (id, user_id, season, explanation, source, observations, answers,
+      consent_analysis, consent_research, privacy_policy_version, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?)`
+  ).bind(id, user ? user.id : null, season, explanation, source,
+    observations ? JSON.stringify(observations) : null, JSON.stringify(clean),
+    form.get('consent_research') === 'yes' ? 1 : 0, PRIVACY_POLICY_VERSION, now()).run();
+
+  return json({ ok: true, id, season, explanation, source, saved: !!user }, 201);
+}
+
+// Attaches an analysis done while signed out to the account that just signed in.
 async function saveResult(request, env) {
   const user = await currentUser(request, env);
   if (!user) return json({ error: 'Please sign in to save your palette.' }, 401);
 
   const body = await readJson(request);
-  if (body.consent_analysis !== true) {
-    return json({ error: 'Please agree to how your answers will be used.' }, 400);
+  const id = String(body.id || '');
+  const row = await env.DB.prepare('SELECT user_id FROM results WHERE id = ?').bind(id).first();
+  if (!row || (row.user_id && row.user_id !== user.id)) {
+    return json({ error: "We couldn't find that result. Please retake the analysis." }, 404);
   }
-  if (!validAnswers(body.answers)) {
-    return json({ error: 'Some quiz answers were missing. Please retake the quiz.' }, 400);
+  if (!row.user_id) {
+    await env.DB.prepare('UPDATE results SET user_id = ? WHERE id = ? AND user_id IS NULL').bind(user.id, id).run();
   }
-  const answers = {};
-  for (const key of QUIZ_KEYS) answers[key] = body.answers[key];
-
-  const id = crypto.randomUUID();
-  const season = pickSeason(answers);
-  await env.DB.prepare(
-    `INSERT INTO results (id, user_id, season, answers, consent_analysis, consent_research, privacy_policy_version, created_at)
-     VALUES (?, ?, ?, ?, 1, ?, ?, ?)`
-  ).bind(id, user.id, season, JSON.stringify(answers), body.consent_research === true ? 1 : 0,
-    PRIVACY_POLICY_VERSION, now()).run();
-
-  return json({ ok: true, id, season }, 201);
+  return json({ ok: true, id });
 }
 
 // ---------- Sessions ----------
