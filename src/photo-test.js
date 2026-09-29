@@ -7,7 +7,7 @@
 // Same privacy as the real analysis: the photo exists only in memory for this request
 // and is never stored or logged.
 
-import { pickSeasonWithPhoto, reasonFromPhoto } from '../season-rules.js';
+import { pickSeasonWithPhoto, reasonFromPhoto, goodLight } from '../season-rules.js';
 import { describePhoto, VISION_MODEL } from './photo-reading.js';
 
 var MAX_PHOTO_CHARS = 3000000;
@@ -39,6 +39,7 @@ export async function photoTest(request, env) {
   if (seen && seen.face_visible && seen.undertone) {
     out.season = pickSeasonWithPhoto(null, seen);
     out.reason = reasonFromPhoto(out.season, seen, null);
+    if (!goodLight(seen)) out.reason += ' (Indoor light: this photo counted for half. In the real app the answers would carry more weight; retake by a window.)';
   } else {
     out.note = seen && !seen.face_visible ? 'No face found — the app would fall back to the answers.' : 'The AI reply could not be used — the app would fall back to the answers.';
   }

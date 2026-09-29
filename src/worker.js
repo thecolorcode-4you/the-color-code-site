@@ -10,7 +10,7 @@
 // storage, a database or the logs, and it is gone as soon as the result is sent back.
 // Every other path is served as a normal page of the site.
 
-import { cleanAnswers, pickSeason, reasonFor, pickSeasonWithPhoto, reasonFromPhoto } from '../season-rules.js';
+import { cleanAnswers, pickSeason, reasonFor, pickSeasonWithPhoto, reasonFromPhoto, goodLight } from '../season-rules.js';
 import { describePhoto, VISION_MODEL } from './photo-reading.js';
 import { photoTest } from './photo-test.js';
 
@@ -81,7 +81,8 @@ async function analyze(request, env) {
     method: 'photo+quiz',
     photoUsed: true,
     quizSeason: quizSeason,
-    note: seen.undertone_confidence === 'unsure' ? 'Your lighting or makeup made your undertone harder to read, so your answers counted for more. For a stronger photo reading, retake it facing a window, bare-faced.' : undefined,
+    note: !goodLight(seen) ? 'Your photo looks like it was taken in indoor light, which can shift how colors read, so your answers counted for more. For the most accurate result, retake it facing a window.'
+      : seen.undertone_confidence === 'unsure' ? 'Your lighting or makeup made your undertone harder to read, so your answers counted for more. For a stronger photo reading, retake it facing a window, bare-faced.' : undefined,
   });
 }
 

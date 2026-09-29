@@ -65,18 +65,29 @@ export var SEEN_VALUES = {
   contrast: ['high', 'medium', 'low'],
 };
 
+// Indoor or mixed light shifts how skin and contrast read, so those photos count for half.
+export function goodLight(seen) {
+  return seen.lighting_type !== 'indoor' && seen.lighting_type !== 'mixed';
+}
+
 export function scorePhoto(seen) {
+  var weight = goodLight(seen) ? 1 : 0.5;
   var sure = seen.undertone_confidence === 'unsure' ? 1 : 2;
-  var t = { warm: 1, cool: -1, neutral: 0 }[seen.undertone] * sure;
-  var d = { light: -2, medium: 0, deep: 2 }[seen.depth];
-  var c = { bright: 2, in_between: 0, muted: -2 }[seen.clarity] + { high: 1.5, medium: 0, low: -1.5 }[seen.contrast];
+  var t = { warm: 1, cool: -1, neutral: 0 }[seen.undertone] * sure * weight;
+  var d = { light: -2, medium: 0, deep: 2 }[seen.depth] * weight;
+  var c = ({ bright: 2, in_between: 0, muted: -2 }[seen.clarity] + { high: 1.5, medium: 0, low: -1.5 }[seen.contrast]) * weight;
   return { t: t, d: d, c: c, tieWarm: seen.undertone === 'warm' };
 }
 
-export function seasonFromScores(s) {
+export function seasonFromScores(s, brightWinsTie) {
   var t = s.t, d = s.d, c = s.c;
   var warm = t > 0 || (t === 0 && s.tieWarm);
-  var strongest = [['depth', Math.abs(d)], ['clarity', Math.abs(c)]].sort(function (x, y) { return y[1] - x[1]; })[0];
+  // Whichever of depth or clarity is stronger decides Light/Deep vs Bright/Soft. With a photo,
+  // an exact tie goes to brightness: Light seasons are soft and low-contrast, so someone the
+  // photo shows as bright shouldn't land in one just because she is also light. (Quiz-only
+  // results keep the original tie rule.)
+  var useClarity = Math.abs(c) > Math.abs(d) || (Math.abs(c) === Math.abs(d) && (brightWinsTie ? c > 0 : false));
+  var strongest = useClarity ? ['clarity', Math.abs(c)] : ['depth', Math.abs(d)];
 
   if (Math.abs(t) >= 2.5 && strongest[1] < 2) return warm ? (d > 0 ? 'True Autumn' : 'True Spring') : (d > 0.5 ? 'True Winter' : 'True Summer');
   if (strongest[0] === 'depth') {
@@ -96,9 +107,9 @@ export function pickSeason(a) {
 // Photo + answers together (answers may be null for the selfie-only test).
 export function pickSeasonWithPhoto(a, seen) {
   var p = scorePhoto(seen);
-  if (!a) return seasonFromScores(p);
+  if (!a) return seasonFromScores(p, true);
   var q = scoreAnswers(a);
-  return seasonFromScores({ t: q.t + p.t, d: q.d + p.d, c: q.c + p.c, tieWarm: p.t !== 0 ? p.tieWarm : q.tieWarm });
+  return seasonFromScores({ t: q.t + p.t, d: q.d + p.d, c: q.c + p.c, tieWarm: p.t !== 0 ? p.tieWarm : q.tieWarm }, true);
 }
 
 var DEPTH_WORD = { light: 'light', medium: 'medium', deep: 'deep' };

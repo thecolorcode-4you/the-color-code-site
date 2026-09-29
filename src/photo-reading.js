@@ -18,11 +18,12 @@ var INSTRUCTIONS =
   'muted = the eyes look soft or smoky and the features look blended, greyed or dusty. If you are not sure, answer in_between.\n' +
   'contrast: how different in lightness the hair, eyes and skin are. high = for example dark hair or eyes against light skin, or light hair against deep skin; low = hair, eyes and skin are all similar in lightness.\n' +
   'If lamps, sunset light, a filter or heavy makeup make the skin hard to judge, set undertone_confidence to unsure. If there is no human face, set face_visible to false.\n' +
+  'lighting_type: daylight = natural light from outside or a window; indoor = lamps or ceiling lights; mixed = both; unsure = you cannot tell.\n' +
   'Never guess or mention ethnicity, age, weight or attractiveness.\n\n' +
   'Reply with only this JSON object and nothing else:\n' +
   '{"face_visible": true, "what_is_in_photo": "<short phrase>", "undertone": "warm|cool|neutral", "undertone_confidence": "sure|unsure", ' +
   '"depth": "light|medium|deep", "clarity": "bright|in_between|muted", "contrast": "high|medium|low", ' +
-  '"eye_color": "<simple color>", "hair_color": "<simple color>", "lighting": "<short phrase>"}';
+  '"eye_color": "<simple color>", "hair_color": "<simple color>", "lighting": "<short phrase>", "lighting_type": "daylight|indoor|mixed|unsure"}';
 
 // Ask the AI to describe the photo. Returns { seen, raw } — seen is null if the reply
 // can't be used. Throws if the AI call itself fails.
@@ -61,6 +62,7 @@ export function readSeen(raw) {
     eye_color: cleanColor(obj.eye_color),
     hair_color: cleanColor(obj.hair_color),
     lighting: String(obj.lighting || '').slice(0, 60),
+    lighting_type: ['daylight', 'indoor', 'mixed', 'unsure'].indexOf(String(obj.lighting_type || '').toLowerCase().trim()) >= 0 ? String(obj.lighting_type).toLowerCase().trim() : 'unsure',
   };
   for (var k in SEEN_VALUES) {
     var v = String(obj[k] || '').toLowerCase().trim().replace(/[\s-]+/g, '_');

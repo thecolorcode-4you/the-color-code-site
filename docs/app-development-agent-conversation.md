@@ -347,3 +347,12 @@ The problem isn't the code: the API token Cloudflare uses for automatic builds h
 - *gave the four example people a question 7 answer and checked their seasons didn't change (Maddie Light Summer, Aaliyah Deep Autumn, Priya Deep Winter, Chloe Light Spring).*
 
 *Checked: all 24,192 answer combinations give clean wording, and all 12 seasons are reachable. **The Bright Winter tester answering honestly now gets Bright Winter from the quiz alone**, and with a selfie too if the AI reads her as bright (if the AI misreads her as muted, the combined result is True Summer). The selfie, account and quiz flows pass at phone size.]*
+
+**Team:**
+> now the test is saying im a light summer in indoor light. i tested it outside and it said im a bright winter. These are teh two ai responses: {"clarity":"bright","contrast":"medium","depth":"light","eye_color":"brown","face_visible":true,"hair_color":"red","lighting":"soft indoor","undertone":"cool","undertone_confidence":"sure","what_is_in_photo":"a young woman"} {"clarity":"bright","contrast":"high","depth":"light","eye_color":"brown","face_visible":true,"hair_color":"red","lighting":"natural","undertone":"cool","undertone_confidence":"sure","what_is_in_photo":"a young woman"}
+
+*[The agent pointed out that this is the Principle 3 "we're wrong" signal: the same person got two seasons from two photos. Both readings agreed on cool, sure, light, bright, red hair, brown eyes; only contrast (medium indoors, high outside) and lighting differed. With medium contrast, her "light" and "bright" scores tied exactly, and the rules broke ties toward "light", giving Light Summer. Fixes:*
+- *with a photo, **an exact tie between light and bright goes to bright** (Light seasons are soft and low-contrast, so someone the photo shows as bright shouldn't land in one on a tie). Quiz-only results keep the original rule, so no quiz result changes;*
+- *the AI now reports **lighting_type** (daylight / indoor / mixed / unsure). Indoor or mixed photos count for half, her answers count for more, and she sees "Your photo looks like it was taken in indoor light… retake it facing a window."*
+
+*Checked with the team's two exact AI replies: both now give **Bright Winter**, selfie-only and with honest answers, whether tagged indoor or daylight. All 108 possible readings give a season matching the undertone seen. The four example people's quiz seasons are unchanged. 24,192 answer combinations give clean wording. The server, selfie and build checks pass.]*
