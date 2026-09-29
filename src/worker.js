@@ -1,18 +1,19 @@
 // The Color Code — server function for selfie analysis.
 //
 // POST /api/analyze  { photo: "data:image/jpeg;base64,...", answers: {six quiz answers} }
-// Sends the selfie and answers to Cloudflare's free image-reading AI, which picks one of
-// the twelve seasons and explains why in two plain sentences.
+// Cloudflare's free image AI DESCRIBES the selfie (undertone, depth, brightness, contrast,
+// eye and hair color). The season is then chosen by the fixed rules in season-rules.js from
+// that description plus the six answers, so the result is consistent and never contradicts
+// what was seen. The AI never sees the answers.
 //
 // Privacy: the photo only exists in memory for this one request. It is never written to
 // storage, a database or the logs, and it is gone as soon as the result is sent back.
 // Every other path is served as a normal page of the site.
 
-import { SEASONS, SEASON_NAMES } from '../palettes.js';
-import { LABELS, cleanAnswers, pickSeason, reasonFor } from '../season-rules.js';
+import { cleanAnswers, pickSeason, reasonFor, pickSeasonWithPhoto, reasonFromPhoto } from '../season-rules.js';
+import { describePhoto, VISION_MODEL } from './photo-reading.js';
 import { photoTest } from './photo-test.js';
 
-var VISION_MODEL = '@cf/meta/llama-4-scout-17b-16e-instruct';
 var MAX_PHOTO_CHARS = 3000000; // about 2 MB of image; the app shrinks photos well below this
 
 export default {
@@ -23,7 +24,7 @@ export default {
       return analyze(request, env);
     }
     // TEMPORARY team test (selfie only) — remove with src/photo-test.js and photo-test.html.
-    if (url.pathname === '/api/photo-test' && request.method === 'POST') return photoTest(request, env, VISION_MODEL);
+    if (url.pathname === '/api/photo-test' && request.method === 'POST') return photoTest(request, env);
     return env.ASSETS.fetch(request);
   },
 };
@@ -46,6 +47,7 @@ async function analyze(request, env) {
   var fallback = { season: quizSeason, reason: reasonFor(quizSeason, answers), method: 'quiz', photoUsed: false };
 
   var photo = body.photo;
+  body = null;
   if (typeof photo !== 'string' || !/^data:image\/(jpeg|png|webp);base64,/.test(photo) || photo.length > MAX_PHOTO_CHARS) {
     return json(Object.assign(fallback, { note: 'We couldn\'t open that photo, so your season comes from your answers.' }));
   }
@@ -53,76 +55,34 @@ async function analyze(request, env) {
     return json(Object.assign(fallback, { note: 'Photo analysis is offline right now, so your season comes from your answers.' }));
   }
 
-  var answerText = Object.keys(answers).map(function (k) { return '- ' + LABELS[k][answers[k]]; }).join('\n');
-  var seasonGuide = SEASON_NAMES.map(function (n) { return '- ' + n + ': ' + SEASONS[n].summary; }).join('\n');
-
-  var system =
-    'You are Bella, the color analyst for The Color Code, a personal seasonal color analysis service. ' +
-    'You place a person in exactly one of these twelve seasons:\n' + seasonGuide + '\n\n' +
-    'Look only at colors in the selfie: skin undertone (warm, cool or neutral), skin depth (light, medium or deep), ' +
-    'eye color, natural hair color, and the contrast between them. Weigh the photo together with her questionnaire answers; ' +
-    'when the photo and answers disagree, trust what you can clearly see, unless the lighting is colored or dim. ' +
-    'Skin depth is not undertone: deep, medium and light skin can each be warm, cool or neutral, and deep skin belongs in whichever season its undertone and contrast fit, often an Autumn. ' +
-    'Never choose a Winter season just because skin is deep, and never choose a Spring or Summer just because skin is light. ' +
-    'Never guess or mention ethnicity, age, weight or attractiveness. ' +
-    'If there is no clear face, or the lighting, a filter or heavy makeup makes the coloring impossible to read, set photo_usable to false.\n\n' +
-    'Reply with only a JSON object and nothing else: ' +
-    '{"season": "<one of the twelve names exactly>", "photo_usable": true, ' +
-    '"reason": "<exactly two plain, warm sentences to her, using you/your, naming what you saw in her skin, eyes and hair and why that fits the season>"}';
-
-  var user =
-    'Her questionnaire answers:\n' + answerText + '\n' +
-    'For reference, her answers alone point to ' + quizSeason + '.\n' +
-    'Here is her selfie, taken in daylight. Which season is she?';
-
-  var raw;
+  var seen;
   try {
-    raw = await env.AI.run(VISION_MODEL, {
-      messages: [
-        { role: 'system', content: system },
-        { role: 'user', content: [
-          { type: 'text', text: user },
-          { type: 'image_url', image_url: { url: photo } },
-        ] },
-      ],
-      max_tokens: 300,
-      temperature: 0.1,
-    });
+    seen = (await describePhoto(env, photo)).seen;
   } catch (e) {
     console.error('AI error', e && e.message);
     return json(Object.assign(fallback, { note: 'Photo analysis didn\'t respond just now, so your season comes from your answers.' }));
   } finally {
     photo = null;
-    body = null;
   }
 
-  var parsed = readAiReply(raw);
-  if (!parsed) {
+  if (!seen) {
     console.error('AI reply not usable');
     return json(Object.assign(fallback, { note: 'We couldn\'t read your photo clearly, so your season comes from your answers.' }));
   }
-  if (parsed.photo_usable === false) {
-    return json(Object.assign(fallback, { note: 'Your photo was hard to read (lighting or a filter), so your season comes from your answers. Try again by a window for a photo reading.' }));
+  if (!seen.face_visible) {
+    return json(Object.assign(fallback, { note: 'We couldn\'t find a face in your photo, so your season comes from your answers. Try again facing a window for a photo reading.' }));
   }
 
-  console.log('photo analysis', parsed.season, 'quiz said', quizSeason);
-  return json({ season: parsed.season, reason: parsed.reason, method: 'photo+quiz', photoUsed: true, quizSeason: quizSeason });
+  var season = pickSeasonWithPhoto(answers, seen);
+  console.log('photo analysis', season, 'quiz alone', quizSeason, seen.undertone, seen.depth, seen.clarity, seen.contrast);
+  return json({
+    season: season,
+    reason: reasonFromPhoto(season, seen, answers),
+    method: 'photo+quiz',
+    photoUsed: true,
+    quizSeason: quizSeason,
+    note: seen.undertone_confidence === 'unsure' ? 'Your lighting or makeup made your undertone harder to read, so your answers counted for more. For a stronger photo reading, retake it facing a window, bare-faced.' : undefined,
+  });
 }
 
-// Pull {season, reason, photo_usable} out of the model's reply and make sure the season is one of ours.
-export function readAiReply(raw) {
-  var obj = raw && raw.response !== undefined ? raw.response : raw;
-  if (typeof obj === 'string') {
-    var m = obj.match(/\{[\s\S]*\}/);
-    if (!m) return null;
-    try { obj = JSON.parse(m[0]); } catch (e) { return null; }
-  }
-  if (!obj || typeof obj !== 'object') return null;
-  var season = SEASON_NAMES.find(function (n) { return n.toLowerCase() === String(obj.season || '').trim().toLowerCase(); });
-  if (!season) return null;
-  var reason = String(obj.reason || '').replace(/\s+/g, ' ').trim();
-  var sentences = reason.match(/[^.!?]+[.!?]+/g) || [];
-  if (sentences.length > 2) reason = sentences.slice(0, 2).join('').trim();
-  if (reason.length < 20) reason = 'Your coloring reads as ' + SEASONS[season].summary.charAt(0).toLowerCase() + SEASONS[season].summary.slice(1);
-  return { season: season, reason: reason, photo_usable: obj.photo_usable !== false };
-}
+export { VISION_MODEL };

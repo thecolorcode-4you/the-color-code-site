@@ -1,5 +1,6 @@
 // The Color Code — the six quiz questions and the fixed season rules.
-// Shared by the phone (quiz-only results) and the server (as a check on the photo analysis).
+// Shared by the phone (quiz-only results) and the server, which combines them with what
+// the AI saw in the selfie. The AI only describes the photo; these rules choose the season.
 import { SEASONS } from './palettes.js';
 
 export var QUESTIONS = ['veins', 'jewelry', 'sun', 'hair', 'eyes', 'white'];
@@ -25,22 +26,22 @@ export var LABELS = {
   white: { bright: 'bright white', ivory: 'soft ivory', both: 'white or ivory alike' },
 };
 
-export function pickSeason(a) {
-  // Temperature: negative = cool, positive = warm.
+// Scores from the six answers. t: cool (−) to warm (+). d: light (−) to deep (+).
+// c: soft/muted (−) to bright/clear (+).
+export function scoreAnswers(a) {
   var t = 0;
   t += { blue_purple: -1, green: 1, mix: 0 }[a.veins] || 0;
   t += { silver: -1, gold: 1, both: 0 }[a.jewelry] || 0;
   t += { bright: -1, ivory: 1, both: 0 }[a.white] || 0;
-  t += { golden: 1, red: 1, ash: -0.5, black: -0.5 }[a.hair] || 0;
+  // Hair is only a light hint for warmth: red or golden hair can belong to a cool Winter.
+  t += { golden: 0.5, red: 0.5, ash: -0.5, black: -0.5 }[a.hair] || 0;
   t += { burn: -0.5, tan: 0.5 }[a.sun] || 0;
 
-  // Depth: negative = light, positive = deep.
   var d = 0;
   d += { platinum: -2, golden: -1.5, ash: -1, light_brown: -0.5, medium_brown: 0.5, red: 0, dark_brown: 1.5, black: 2 }[a.hair] || 0;
   d += { light_blue_gray: -1, bright_blue: -0.5, green: -0.5, hazel: 0, light_brown: 0, dark_brown: 1, black_brown: 1.5 }[a.eyes] || 0;
   d += { burn: -0.5, burn_then_tan: 0, tan: 0.5, rarely_burn: 1 }[a.sun] || 0;
 
-  // Clarity: negative = soft/muted, positive = bright/clear.
   var c = 0;
   c += { bright: 1, ivory: -0.5, both: 0 }[a.white] || 0;
   c += { bright_blue: 1.5, green: 0.5, light_blue_gray: 0, hazel: -1, light_brown: -0.5, dark_brown: 0, black_brown: 0.5 }[a.eyes] || 0;
@@ -48,7 +49,30 @@ export function pickSeason(a) {
   // High contrast between dark hair and light eyes reads as bright.
   if ((a.hair === 'black' || a.hair === 'dark_brown') && (a.eyes === 'bright_blue' || a.eyes === 'light_blue_gray' || a.eyes === 'green')) c += 1.5;
 
-  var warm = t > 0 || (t === 0 && (a.hair === 'golden' || a.hair === 'red'));
+  return { t: t, d: d, c: c, tieWarm: a.hair === 'golden' || a.hair === 'red' };
+}
+
+// What the AI saw in the photo (it only describes; these rules decide). Photo readings
+// count for more than a single answer, and "unsure" readings count for half.
+export var SEEN_VALUES = {
+  undertone: ['warm', 'cool', 'neutral'],
+  undertone_confidence: ['sure', 'unsure'],
+  depth: ['light', 'medium', 'deep'],
+  clarity: ['bright', 'in_between', 'muted'],
+  contrast: ['high', 'medium', 'low'],
+};
+
+export function scorePhoto(seen) {
+  var sure = seen.undertone_confidence === 'unsure' ? 1 : 2;
+  var t = { warm: 1, cool: -1, neutral: 0 }[seen.undertone] * sure;
+  var d = { light: -2, medium: 0, deep: 2 }[seen.depth];
+  var c = { bright: 2, in_between: 0, muted: -2 }[seen.clarity] + { high: 1.5, medium: 0, low: -1.5 }[seen.contrast];
+  return { t: t, d: d, c: c, tieWarm: seen.undertone === 'warm' };
+}
+
+export function seasonFromScores(s) {
+  var t = s.t, d = s.d, c = s.c;
+  var warm = t > 0 || (t === 0 && s.tieWarm);
   var strongest = [['depth', Math.abs(d)], ['clarity', Math.abs(c)]].sort(function (x, y) { return y[1] - x[1]; })[0];
 
   if (Math.abs(t) >= 2.5 && strongest[1] < 2) return warm ? (d > 0 ? 'True Autumn' : 'True Spring') : (d > 0.5 ? 'True Winter' : 'True Summer');
@@ -60,6 +84,36 @@ export function pickSeason(a) {
     if (c <= -1) return warm ? 'Soft Autumn' : 'Soft Summer';
   }
   return warm ? (d > 0 ? 'True Autumn' : 'True Spring') : (d > 0.5 ? 'True Winter' : 'True Summer');
+}
+
+export function pickSeason(a) {
+  return seasonFromScores(scoreAnswers(a));
+}
+
+// Photo + answers together (answers may be null for the selfie-only test).
+export function pickSeasonWithPhoto(a, seen) {
+  var p = scorePhoto(seen);
+  if (!a) return seasonFromScores(p);
+  var q = scoreAnswers(a);
+  return seasonFromScores({ t: q.t + p.t, d: q.d + p.d, c: q.c + p.c, tieWarm: p.t !== 0 ? p.tieWarm : q.tieWarm });
+}
+
+var DEPTH_WORD = { light: 'light', medium: 'medium', deep: 'deep' };
+var CLARITY_WORD = { bright: 'clear, bright', in_between: 'balanced', muted: 'soft, muted' };
+
+// Two plain sentences from what the photo showed and the season the rules chose.
+export function reasonFromPhoto(season, seen, a) {
+  var s = SEASONS[season];
+  var temp = s.family === 'Spring' || s.family === 'Autumn' ? 'warm' : 'cool';
+  var features = [seen.hair_color ? seen.hair_color + ' hair' : '', seen.eye_color ? seen.eye_color + ' eyes' : ''].filter(Boolean).join(' and ');
+  var first = 'In your photo, your skin reads as ' + seen.undertone + ' with ' + DEPTH_WORD[seen.depth] + ' depth, ' +
+    (features ? 'and your ' + features + ' give ' + seen.contrast + ' contrast and ' : 'with ') + CLARITY_WORD[seen.clarity] + ' coloring.';
+  var lead;
+  if (!a || seen.undertone === temp) lead = 'That ' + temp + ' reading';
+  else if (seen.undertone === 'neutral') lead = 'Your answers tip that toward ' + temp + ', which';
+  else lead = 'Your answers point more strongly to a ' + temp + ' undertone, which';
+  var second = lead + ' places you in ' + season + ': ' + s.summary.charAt(0).toLowerCase() + s.summary.slice(1);
+  return first + ' ' + second;
 }
 
 var VEIN_PHRASE = { blue_purple: 'your blue-purple veins', green: 'your green veins', mix: 'veins that look both blue and green' };

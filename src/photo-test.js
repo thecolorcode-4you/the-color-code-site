@@ -1,66 +1,48 @@
 // TEMPORARY team test: selfie-only analysis, no quiz answers.
-// Used by photo-test.html to check whether the AI is really reading the photo.
-// It returns what the AI says it sees plus its raw reply. Remove this file, the
-// /api/photo-test route in worker.js and photo-test.html once testing is done.
+// Used by photo-test.html to check whether the AI is really reading the photo. Uses the
+// same photo reading and season rules as the real app, minus the answers, and returns
+// what the AI says it sees plus its raw reply. Remove this file, the /api/photo-test
+// route in worker.js and photo-test.html once testing is done.
 //
 // Same privacy as the real analysis: the photo exists only in memory for this request
 // and is never stored or logged.
 
-import { SEASONS, SEASON_NAMES } from '../palettes.js';
+import { pickSeasonWithPhoto, reasonFromPhoto } from '../season-rules.js';
+import { describePhoto, VISION_MODEL } from './photo-reading.js';
 
 var MAX_PHOTO_CHARS = 3000000;
 
-export async function photoTest(request, env, model) {
+export async function photoTest(request, env) {
   var started = Date.now();
   var body;
   try { body = await request.json(); } catch (e) { return reply({ error: 'Bad request' }, 400); }
   var photo = body && body.photo;
+  body = null;
   if (typeof photo !== 'string' || !/^data:image\/(jpeg|png|webp);base64,/.test(photo) || photo.length > MAX_PHOTO_CHARS) {
     return reply({ error: 'That photo could not be opened.' }, 400);
   }
   if (!env.AI) return reply({ error: 'The AI is not connected on this deployment.' }, 500);
 
-  var seasonGuide = SEASON_NAMES.map(function (n) { return '- ' + n + ': ' + SEASONS[n].summary; }).join('\n');
-  var system =
-    'You are Bella, the color analyst for The Color Code. You place a person in exactly one of these twelve seasons:\n' + seasonGuide + '\n\n' +
-    'You get ONLY a selfie, no questionnaire. Look carefully at the photo itself and describe what you actually see before deciding. ' +
-    'Skin depth is not undertone: deep, medium and light skin can each be warm, cool or neutral. ' +
-    'Never choose a Winter season just because skin is deep, or a Spring or Summer just because skin is light. ' +
-    'Never guess or mention ethnicity, age, weight or attractiveness. ' +
-    'If there is no face, or the coloring cannot be read, set photo_usable to false and say what you see instead.\n\n' +
-    'Reply with only a JSON object: {"seen": {"what_is_in_photo": "<one short phrase>", "skin_depth": "light|medium|deep", ' +
-    '"skin_undertone": "warm|cool|neutral", "eye_color": "<color>", "hair_color": "<color>", "lighting": "<short>"}, ' +
-    '"photo_usable": true, "season": "<one of the twelve names exactly>", "reason": "<two plain sentences to her>"}';
-
-  var raw;
+  var result;
   try {
-    raw = await env.AI.run(model, {
-      messages: [
-        { role: 'system', content: system },
-        { role: 'user', content: [
-          { type: 'text', text: 'Here is the selfie. What do you see, and which season is she?' },
-          { type: 'image_url', image_url: { url: photo } },
-        ] },
-      ],
-      max_tokens: 400,
-      temperature: 0.1,
-    });
+    result = await describePhoto(env, photo);
   } catch (e) {
-    return reply({ error: 'AI error: ' + (e && e.message), model: model, ms: Date.now() - started });
+    return reply({ error: 'AI error: ' + (e && e.message), model: VISION_MODEL, ms: Date.now() - started });
   } finally {
     photo = null;
-    body = null;
   }
 
-  var text = raw && raw.response !== undefined ? raw.response : raw;
-  var parsed = null;
-  if (typeof text === 'object' && text) parsed = text;
-  else if (typeof text === 'string') {
-    var m = text.match(/\{[\s\S]*\}/);
-    if (m) { try { parsed = JSON.parse(m[0]); } catch (e) {} }
+  var raw = result.raw && result.raw.response !== undefined ? result.raw.response : result.raw;
+  var rawText = String(typeof raw === 'string' ? raw : JSON.stringify(raw)).slice(0, 3000);
+  var seen = result.seen;
+  var out = { model: VISION_MODEL, ms: Date.now() - started, raw: rawText, seen: seen };
+  if (seen && seen.face_visible && seen.undertone) {
+    out.season = pickSeasonWithPhoto(null, seen);
+    out.reason = reasonFromPhoto(out.season, seen, null);
+  } else {
+    out.note = seen && !seen.face_visible ? 'No face found — the app would fall back to the answers.' : 'The AI reply could not be used — the app would fall back to the answers.';
   }
-  var rawText = typeof text === 'string' ? text : JSON.stringify(text);
-  return reply({ model: model, ms: Date.now() - started, parsed: parsed, raw: String(rawText).slice(0, 3000) });
+  return reply(out);
 }
 
 function reply(body, status) {

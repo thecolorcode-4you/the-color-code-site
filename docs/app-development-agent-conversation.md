@@ -305,3 +305,28 @@ The problem isn't the code: the API token Cloudflare uses for automatic builds h
 > the tests failed. we want to run a true selfie only mode
 
 *[The agent added a temporary, hidden team test page, `photo-test.html` (not linked anywhere, noindex), and a separate test endpoint (`/api/photo-test`, in its own file `src/photo-test.js`). It sends only the selfie, no answers and no quiz hint, to the same Cloudflare AI model, and shows the season, the reason, **what the AI says it sees** (what's in the photo, skin depth, undertone, eye and hair color, lighting) and its raw reply. The real quiz isn't changed. Tested with a stand-in AI: no answers are sent, the image is sent, the page shows everything; the real quiz endpoint's tests still pass. Pushed live for the team to test, to be removed afterward.]*
+
+**Team:**
+> where is the hidden test page on the app. i dont see it
+
+**Agent:** It's hidden on purpose: no link anywhere. Open it by pasting https://the-color-code-site.thecolorcode-mktg4250.workers.dev/photo-test.html into Safari or Chrome (not the installed app, which has no address bar); refresh or use a private tab if it doesn't load.
+
+**Team (pasted the selfie-only result):**
+> {"photo_usable":true,"reason":"The woman's skin has a cool undertone and a medium depth, and her red hair and brown eyes have a muted quality. Her overall coloring is gentle and earthy, which is consistent with the Soft Autumn season.","season":"Soft Autumn","seen":{"eye_color":"brown","hair_color":"red","lighting":"natural","skin_depth":"medium","skin_undertone":"cool","what_is_in_photo":"a young woman with long red hair and a white shirt"}}
+
+**Agent:** The AI is seeing the photo: it described red hair, a white shirt, brown eyes and natural light with no answers sent. But it contradicted itself, reading a **cool** undertone and then choosing **Soft Autumn**, a warm season, and it wrote "the woman's" instead of "your." Asked what the person really looks like and for the other tests' results. Proposed a fix: the AI only describes the photo and fixed rules choose the season.
+
+**Team:**
+> hair is actually red, eyes are actually brown, real season is a bright winter. bright winter is what i got from the other two tests
+
+**Agent:** Hair, eyes and cool undertone were read correctly. The errors: it read her coloring as **muted** when a Bright Winter is **bright and clear**, and it let the red hair override its own cool reading (a hair stereotype, like "deep skin = Winter" in round 2). Asked whether the other Bright Winter results came from the real quiz or the selfie-only page. Proposed: (1) the AI describes and the rules decide; (2) ask the AI about brightness and contrast directly; (3) tell it hair never decides undertone; (4) keep checking against testers with known seasons.
+
+**Team:**
+> make the fix
+
+*[The agent changed how selfies are analyzed, in the real app and on the test page:*
+- *The AI now **only describes** the photo: face visible, undertone (and whether it's sure), skin depth, **clarity** (bright / in-between / muted), **contrast** (high / medium / low), eye color, hair color, lighting. Its instructions define each one, say to judge undertone from the skin, never from hair ("red, auburn or golden hair often belongs to someone with a cool undertone"), and keep the depth-is-not-undertone rule. It runs at temperature 0, so the same photo gets the same reading.*
+- *The AI is **no longer sent the answers** or the season the answers point to, so it can't copy them.*
+- ***The season is chosen by fixed rules** (`season-rules.js`) combining what the AI saw with the six answers. Photo readings count for more than one answer; an "unsure" undertone counts for half, with a note suggesting a window and bare skin. Red and golden hair count for less toward warmth in the answers too.*
+- *The reason is written from what was seen, in "you/your."*
+- *Tested with a stand-in AI: the tester's reading (cool, bright, high contrast) gives **Bright Winter**; all 54 possible selfie-only readings give a season matching the undertone seen (never cool → Autumn); no face, bad replies and AI errors fall back to the answers with a note; the AI never receives answers. Honest limit: if the real AI still reads her as muted, she gets Soft Summer or True Summer instead, so the brightness reading has to be checked with real photos. Also found: the six questions alone give typical Bright Winter answers True Summer, because only one question (bright white vs. ivory) measures brightness.]*
