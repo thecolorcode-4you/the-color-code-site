@@ -51,3 +51,21 @@ Also noticed: if 120 members all take a selfie in the same hour, that's the bigg
 - **The "What's next" roadmap (outfit, nails, hair advice…):** keep it public labeled "ideas we're exploring," or remove it? The professor's advice was to keep nails, hair and outfits on the "coming later" list and focus on seasons and makeup.
 
 *Not fixed yet. These go into the next round of changes.*
+
+---
+
+## What we changed after round 3
+
+The team asked to hide the TODO boxes and fix everything else. The three open decisions weren't answered, so the agent used its recommended choices, which are easy to change: **first chapter color night free during the pilot in exchange for a post**, **contact by Instagram DM to @thecolorcode.collective**, and **remove the unapproved "What's next" roadmap**.
+
+| Hannah's problem | Fix |
+|---|---|
+| No front door for chapters | New **"For chapters — Bring a color night to your chapter"** section on the home page (free during the pilot), with a **Plan a chapter color night** button that jumps straight to the chapter section. New FAQ answer: **"Can my chapter do a color night?"** |
+| No way to contact anyone | The chapter section and FAQ now say: message us on Instagram at @thecolorcode.collective with your chapter, date and roughly how many members, and Joely and Sofia (who work with Panhellenic) will set it up. |
+| No price | "Pilot price: free. During the Tulane pilot, your chapter's first color night is free in exchange for posting your results and tagging us." |
+| No guidance for running it today | "Running it: share the app link in your chapter GroupMe; each member takes the quiz in about a minute and posts her season." The automatic chapter spread is labeled as coming later. |
+| Internal notes on the live site | The "What's next" roadmap (with its "pending ceo/Whitney sign-off (Decision 5)" label and reminder box) is removed. **All 8 TODO boxes are hidden** (they stay in the page code as the team's to-do list), along with the empty headshot circles on About. The non-working review form is hidden, replaced with "Sharing a review opens after the pilot" and the Instagram link. The last two visible "Decision 6" references are rewritten in plain words. |
+
+**Re-tested after the fixes:** every page scanned at phone size for visible team notes (TODO, "Decision", "ceo/", "Owner:", "placeholder", "staging"): none left. The home page chapter section is 2.8 screens down, and its button lands exactly on the chapter section. The quiz, selfie and account tests from rounds 1 and 2 all still pass.
+
+**Still open:** the chapter spread collected automatically (a group link), which needs accounts on; a small trial of many selfies in one sitting before a real chapter night.

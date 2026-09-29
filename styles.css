@@ -286,3 +286,9 @@ h2.section-title { line-height: 1.15; }
 .not-right { margin-top: 18px; font-size: 14px; color: var(--text-muted); }
 .not-right summary { cursor: pointer; color: var(--accent-deep); font-weight: 600; }
 .not-right p { margin-top: 8px; }
+
+/* Team to-do notes stay in the page code but are hidden from customers.
+   To see them while editing, delete this rule. */
+.todo, .team-photo-placeholder { display: none !important; }
+.chapter-offer { margin-top: 22px; display: grid; gap: 10px; font-size: 15px; background: var(--accent-tint); border-color: transparent; }
+[id="chapters"] { scroll-margin-top: 16px; }

@@ -279,3 +279,15 @@ The problem isn't the code: the API token Cloudflare uses for automatic builds h
 **Agent (as Hannah), summary:** Found the chapter color night only by luck, 4 screens down on the 6.5-screen Results & Benefits page. The example season spread is the most convincing thing on the site for her. But: nothing on the home page, How It Works or FAQ mentions chapters; "ask Joely or Sofia through Panhellenic" has no way to reach them; no price (the FAQ pricing answer is a TODO box addressed to the team); and internal notes are live on Results & Benefits ("pending ceo/Whitney sign-off before this goes live (Decision 5)", a reminder box saying the section shouldn't be on a live site). She could have members take the quiz individually tonight, but nothing collects the chapter's spread. She would not have booked.
 
 **Three changes that would have helped most:** (1) a "For chapters" front door on the home page and FAQ, with the pilot price in plain words; (2) a real way to contact the team; (3) take the internal notes and TODO boxes off the live site. **Team decisions needed first:** chapter price during the pilot, how chapters contact you, and whether the "What's next" roadmap stays public.
+
+*[The agent asked the team three decisions (chapter price during the pilot, how chapters contact the team, whether the "What's next" roadmap stays). The question was dismissed.]*
+
+**Team:**
+> what is TODO box
+
+**Agent:** A TODO box is a yellow dashed-border box added while the site was being built, holding the place of content the team hasn't provided yet, written as a note to ourselves ("Owner: Whitney," "per Decision 9"). They're visible to every customer on the live site, which is why Aaliyah and Hannah read them as signs the business isn't ready. Eight were still live: headshots (About), explainer video (How It Works), exact season colors, real sample palette and the roadmap reminder (Results & Benefits), review questions (Reviews), pricing after the pilot and refund wording (FAQ). Each can be fixed by supplying the content or hidden until it exists. Suggested hiding all eight now.
+
+**Team:**
+> hide them. fix everythign else and push to main
+
+*[The agent hid all 8 TODO boxes and the empty headshot circles (kept in the page code as the team's to-do list), and used its recommended answers to the three open decisions: first chapter night free during the pilot for a post, contact by Instagram DM, roadmap removed. It added a "For chapters" section on the home page, a "Can my chapter do a color night?" FAQ answer, and a price, contact and "running it" box on the chapter color night section. It hid the non-working review form, and rewrote the last visible "Decision 6" references. It scanned every page at phone size for visible team notes (none left) and re-ran the quiz, selfie and account tests (all pass). Full table in `docs/beta-round-3.md`. Then pushed to main.]*
