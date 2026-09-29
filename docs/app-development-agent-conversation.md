@@ -208,3 +208,16 @@ The problem isn't the code: the API token Cloudflare uses for automatic builds h
 - ***Customer Reviews:** "No real reviews yet," then four example reviews, not all five stars. Aaliyah's is 4 stars and asks for foundation guidance; Chloe asks for a one-tap Instagram Story share.*
 
 *Checked at phone width: all cards render, no sideways scrolling, no errors.]*
+
+---
+
+## 8. Beta round 1 — Priya
+
+**Team:**
+> Pretend to be one of the people you invented, someone who has never seen our app. Open it on a phone-sized screen and try to get your color analysis, without help from me. Tell me what you expected on each screen, where you got confused or stuck, and the three changes that would have helped you most. Don't fix anything yet.
+
+*[The agent played Priya (busy pre-med, won't upload a photo). It opened the exact code live on `main` in a phone-sized iPhone browser, starting from the home page as if from a GroupMe link. It measured how far she had to scroll to each thing, tapped through the quiz without a photo, and tried submitting without ticking the agreement box, the way a hurried person would. The full record is `docs/beta-round-1.md`.]*
+
+**Agent (as Priya), summary:** Got Deep Winter "based on your six answers" without help, but nearly quit twice. Stuck or confused by: the home page banner "STAGING PREVIEW — nothing here is live"; "Upload a few photos" with no mention that the photo is optional; the first question being 2.4 screens down, with the skip-photo line at the bottom of the selfie box; "saved to your free account" when there's no account step; the reason's grammar ("Your a mix of blue and green veins…"); "Pilot palette — final shades coming soon" making the result sound fake; the install card covering the screen from the first second.
+
+**Three changes that would have helped most:** (1) remove the staging banner everywhere and say the selfie is optional on the home page; (2) get to question 1 within one screen, with a "Skip the photo — just answer 6 questions" button; (3) fix the reason's grammar, reword the pilot-palette label, and only mention saving to an account when accounts are on.
