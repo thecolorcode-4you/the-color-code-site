@@ -266,3 +266,16 @@ The problem isn't the code: the API token Cloudflare uses for automatic builds h
 > option A then go back to pushing the changes onto the app
 
 *[The agent put Option A on the FAQ: "Your selfie is optional. If you take one, it's used once, only to read your skin, eye and hair color, and deleted as soon as your result is back. We never save it, and no one on our team ever sees it. Rather not share a photo? Skip it — your six answers alone still give you a season." Then saved and pushed it live.]*
+
+---
+
+## 10. Beta round 3 — Hannah
+
+**Team:**
+> run hannah beta test
+
+*[The agent played Hannah, the sisterhood chair of a 120-member chapter with about $200–$300 per event, deciding whether to book a color night. It opened the exact live code (commit `243fa45`) at iPhone size, starting from the home page as if from a Panhellenic GroupMe, and searched every page for chapters, groups, sisterhood, Panhellenic, booking, contact, price or cost. Full record: `docs/beta-round-3.md`.]*
+
+**Agent (as Hannah), summary:** Found the chapter color night only by luck, 4 screens down on the 6.5-screen Results & Benefits page. The example season spread is the most convincing thing on the site for her. But: nothing on the home page, How It Works or FAQ mentions chapters; "ask Joely or Sofia through Panhellenic" has no way to reach them; no price (the FAQ pricing answer is a TODO box addressed to the team); and internal notes are live on Results & Benefits ("pending ceo/Whitney sign-off before this goes live (Decision 5)", a reminder box saying the section shouldn't be on a live site). She could have members take the quiz individually tonight, but nothing collects the chapter's spread. She would not have booked.
+
+**Three changes that would have helped most:** (1) a "For chapters" front door on the home page and FAQ, with the pilot price in plain words; (2) a real way to contact the team; (3) take the internal notes and TODO boxes off the live site. **Team decisions needed first:** chapter price during the pilot, how chapters contact you, and whether the "What's next" roadmap stays public.
