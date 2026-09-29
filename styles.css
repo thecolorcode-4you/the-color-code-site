@@ -221,3 +221,12 @@ h2.section-title { font-size: 30px; margin-bottom: 8px; }
   .nav-links { gap: 8px 14px; }
   .swatch-dot { width: 46px; height: 46px; }
 }
+
+/* Install prompt */
+.install-bar { position: fixed; left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); z-index: 50; display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 12px 12px 12px 14px; box-shadow: 0 8px 28px rgba(43,37,34,.18); max-width: 520px; margin: 0 auto; }
+.install-bar img { width: 44px; height: 44px; border-radius: 10px; flex: none; }
+.install-text { flex: 1; font-size: 13.5px; line-height: 1.4; color: var(--text-muted); }
+.install-text strong { display: block; color: var(--text); font-size: 14.5px; }
+.ios-share { font-weight: 600; color: var(--text); }
+.install-go { background: var(--accent); color: var(--on-accent); border: none; border-radius: 20px; padding: 9px 16px; font: 600 14px 'Manrope', sans-serif; cursor: pointer; }
+.install-x { background: none; border: none; font-size: 22px; line-height: 1; color: var(--text-muted); cursor: pointer; padding: 4px 6px; }
