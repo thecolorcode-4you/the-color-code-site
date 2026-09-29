@@ -62,10 +62,15 @@ export function pickSeason(a) {
   return warm ? (d > 0 ? 'True Autumn' : 'True Spring') : (d > 0.5 ? 'True Winter' : 'True Summer');
 }
 
+var VEIN_PHRASE = { blue_purple: 'your blue-purple veins', green: 'your green veins', mix: 'veins that look both blue and green' };
+var JEWELRY_PHRASE = { silver: 'the way silver jewelry flatters you', gold: 'the way gold jewelry flatters you', both: 'looking good in both gold and silver' };
+var WHITE_PHRASE = { bright: 'your pull toward bright white', ivory: 'your pull toward soft ivory', both: 'looking fine in white or ivory' };
+
 export function reasonFor(season, a) {
   var s = SEASONS[season];
   var temp = s.family === 'Spring' || s.family === 'Autumn' ? 'warm' : 'cool';
-  var first = 'Your ' + LABELS.veins[a.veins] + ', your pull toward ' + LABELS.jewelry[a.jewelry] + ' and ' + LABELS.white[a.white] + ' point to a ' + temp + ' undertone.';
+  var first = VEIN_PHRASE[a.veins] + ', ' + JEWELRY_PHRASE[a.jewelry] + ' and ' + WHITE_PHRASE[a.white] + ' point to a ' + temp + ' undertone.';
+  first = first.charAt(0).toUpperCase() + first.slice(1);
   var second = 'Paired with your ' + LABELS.hair[a.hair] + ' and ' + LABELS.eyes[a.eyes] + ', that places you in ' + season + ': ' + s.summary.charAt(0).toLowerCase() + s.summary.slice(1);
   return first + ' ' + second;
 }

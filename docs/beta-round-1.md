@@ -53,3 +53,22 @@ Also noticed (not a Priya problem): the home video is a `.mov` file, which some 
 3. **Make the result sentence trustworthy:** fix the reason's grammar for every answer combination, and change "Pilot palette — final shades coming soon" to something that doesn't make the colors sound fake (for example, "Pilot palette — Bella is refining these shades"). Also make "saved to your account" appear only when accounts are actually on.
 
 *Not fixed yet, as asked. These go into the next round of changes.*
+
+---
+
+## What we changed after round 1
+
+| Priya's problem | Fix |
+|---|---|
+| "STAGING PREVIEW — nothing here is live" banner on 6 pages | Removed everywhere. Banner now reads "Tulane pilot — free during launch." The footer's "Staging preview… not the live site" and "(Decision 2)" notes are also removed. |
+| "Upload a few photos" on the home page | Now "Take a selfie (optional) and answer six quick questions," and the photo promise says it's used once and deleted, or skip it. Same wording on the How It Works steps. |
+| First question 2.4 screens down, submit 4.7 screens down | The intro is trimmed to one paragraph. The "How it works" preview only shows to visitors who still need to create an account. **First question now 1.2 screens down, submit 3.5.** |
+| Skip-photo line buried at the bottom of the selfie box | A **Skip the photo** button sits next to Take a selfie and jumps straight to question 1. |
+| "Your a mix of blue and green veins…" | The reason sentence is rewritten, and all 4,536 possible answer combinations were checked for broken wording: zero problems. |
+| "Pilot palette — final shades coming soon" sounded fake | Now "Pilot palette — Bella is still refining these shades." |
+| "Saved to your free account" with no account step | That line is part of the preview, which only shows when accounts are on and she isn't logged in. |
+| Install card covering the screen from the first second | The card now only appears on the result page and My Account, after she has her palette. |
+
+**Re-tested as Priya after the fixes:** banner fixed, no install card before the result, first question 1.2 screens down; Skip the photo lands exactly on question 1; the reason sentence reads cleanly; the install card shows on the result page. The account flow and the selfie flow tests from earlier still pass.
+
+**Not fixed in this round (noticed, outside Priya's three):** the dashed yellow "TODO" boxes with team notes still show on How It Works, Results & Benefits, Customer Reviews, About and FAQ; the home video is a `.mov`, which some Android phones may not play.

@@ -279,3 +279,7 @@ h2.section-title { font-size: 30px; margin-bottom: 8px; }
 .spread-bar span { display: block; height: 100%; border-radius: 6px; }
 .spread-count { font-weight: 600; text-align: right; }
 .spread-who { grid-column: 2 / 4; font-size: 12px; color: var(--text-muted); }
+.btn-secondary { background: var(--bg); color: var(--accent-deep); border: 1px solid var(--accent); padding: 14px 22px; font: 600 15px 'Manrope', sans-serif; border-radius: 3px; cursor: pointer; }
+.selfie-box.skipped { opacity: .65; }
+h2.section-title { line-height: 1.15; }
+@media (max-width: 480px) { section + section { margin-top: 44px; } }

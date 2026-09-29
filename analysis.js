@@ -36,14 +36,28 @@ if (form) {
   var user = await currentUser();
   var gate = document.querySelector('[data-account-gate]');
   var who = document.querySelector('[data-signed-in]');
+  var previewSec = document.querySelector('[data-preview]');
+  var quizHeading = document.querySelector('[data-quiz-start]');
   if (!accountsOn || user) {
     form.hidden = false;
     if (gate) gate.hidden = true;
+    if (previewSec) previewSec.hidden = true;
     if (user && who) { who.hidden = false; who.innerHTML = 'Signed in as <strong>' + esc(user.email) + '</strong> — your result will be saved to <a href="account.html">your account</a>.'; }
   } else {
     form.hidden = true;
     if (gate) gate.hidden = false;
+    if (previewSec) previewSec.hidden = false;
+    if (quizHeading) quizHeading.hidden = true;
   }
+
+  // "Skip the photo" jumps straight to question 1.
+  form.querySelector('[data-skip-photo]').addEventListener('click', function () {
+    var q1 = form.querySelector('.quiz-q:not(.selfie-box)');
+    form.querySelector('[data-selfie]').classList.add('skipped');
+    q1.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    var first = q1.querySelector('input');
+    if (first) first.focus({ preventScroll: true });
+  });
 
   // Selfie: open the front camera (or pick a photo), shrink it on the phone, keep it only in memory.
   var photo = null;
@@ -173,7 +187,7 @@ if (out) {
       '<p class="eyebrow">Your season</p>' +
       '<h1 class="page-title">' + esc(r.season) + '</h1>' +
       '<p class="lede">' + esc(r.reason) + '</p>' +
-      (PALETTES_ARE_PLACEHOLDER ? '<p class="example-flag" style="margin-top:18px;">Pilot palette — Bella\'s final shades coming soon</p>' : '') +
+      (PALETTES_ARE_PLACEHOLDER ? '<p class="example-flag" style="margin-top:18px;">Pilot palette — Bella is still refining these shades</p>' : '') +
       '<p class="method-line">' + (r.method === 'photo+quiz' ? 'Based on your selfie and your six answers. Your photo has been deleted.' : 'Based on your six answers.') + '</p>' +
       (r.note ? '<p class="form-msg" style="margin-top:14px;">' + esc(r.note) + '</p>' : '') +
       (r.teamNote ? '<div class="card" style="margin-top:22px;"><strong>Note from The Color Code team</strong><p style="margin-top:6px;">' + esc(r.teamNote) + '</p></div>' : '') +

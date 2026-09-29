@@ -59,6 +59,8 @@ if ('serviceWorker' in navigator) {
 (function () {
   var standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
   if (standalone) return;
+  // Only offer the app after she has seen her result, not before she's tried anything.
+  if (!/\/(result|account)\.html$/.test(location.pathname)) return;
   var dismissed = false;
   try { dismissed = localStorage.getItem('tcc_install_dismissed') === '1'; } catch (e) {}
   if (dismissed) return;

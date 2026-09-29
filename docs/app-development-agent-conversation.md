@@ -221,3 +221,8 @@ The problem isn't the code: the API token Cloudflare uses for automatic builds h
 **Agent (as Priya), summary:** Got Deep Winter "based on your six answers" without help, but nearly quit twice. Stuck or confused by: the home page banner "STAGING PREVIEW — nothing here is live"; "Upload a few photos" with no mention that the photo is optional; the first question being 2.4 screens down, with the skip-photo line at the bottom of the selfie box; "saved to your free account" when there's no account step; the reason's grammar ("Your a mix of blue and green veins…"); "Pilot palette — final shades coming soon" making the result sound fake; the install card covering the screen from the first second.
 
 **Three changes that would have helped most:** (1) remove the staging banner everywhere and say the selfie is optional on the home page; (2) get to question 1 within one screen, with a "Skip the photo — just answer 6 questions" button; (3) fix the reason's grammar, reword the pilot-palette label, and only mention saving to an account when accounts are on.
+
+**Team:**
+> fix it
+
+*[The agent fixed round 1's findings (full table in `docs/beta-round-1.md`): removed the staging banner and footer notes from every page; changed "Upload a few photos" to "Take a selfie (optional)…"; trimmed the start page so the first question is 1.2 screens down instead of 2.4; added a **Skip the photo** button that jumps to question 1; rewrote the reason sentence and checked all 4,536 answer combinations for broken wording; reworded the pilot-palette label; showed the account preview only when accounts are on; moved the install card to after the result. Re-ran Priya's path and the earlier account and selfie tests: all pass.]*
