@@ -246,3 +246,8 @@ The problem isn't the code: the API token Cloudflare uses for automatic builds h
 **Three changes that would have helped most:** (1) treat "can't tell" as "can't tell" and add a "rarely burn, skin deepens" sun option; (2) add "bare skin or light makeup" to the selfie tips and tell the AI that depth is not undertone; (3) replace the FAQ TODO with the real photo promise, fix or remove the redo claim, and explain the avoid colors.
 
 **Still needed from the team:** a real selfie test by someone with deep skin, bare-faced by a window, twice in different daylight, to check the real AI's season (Principle 3).
+
+**Team:**
+> fix it
+
+*[The agent fixed round 2's findings (full table in `docs/beta-round-2.md`): split "A mix / can't tell" into two answers, with "I can't tell" left out of the reason and passed to the AI as such; added "I rarely burn — my skin just gets deeper" (counts toward depth only, not warmth); added "bare skin or light makeup" to the selfie tips; added a rule to Bella's AI instructions that skin depth is not undertone and deep skin must never be put in Winter just for being deep; replaced the FAQ's photo TODO with the real answer; replaced the false redo and "instant, download, email" claims with what the app actually does; added a "Doesn't look right?" help section and a one-line reason under each season's avoid colors. Re-ran Aaliyah's path and all earlier tests: all pass. 8,064 answer combinations checked for broken wording: none.]*

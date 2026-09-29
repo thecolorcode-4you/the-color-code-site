@@ -283,3 +283,6 @@ h2.section-title { font-size: 30px; margin-bottom: 8px; }
 .selfie-box.skipped { opacity: .65; }
 h2.section-title { line-height: 1.15; }
 @media (max-width: 480px) { section + section { margin-top: 44px; } }
+.not-right { margin-top: 18px; font-size: 14px; color: var(--text-muted); }
+.not-right summary { cursor: pointer; color: var(--accent-deep); font-weight: 600; }
+.not-right p { margin-top: 8px; }

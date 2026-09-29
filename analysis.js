@@ -192,12 +192,13 @@ if (out) {
       (r.note ? '<p class="form-msg" style="margin-top:14px;">' + esc(r.note) + '</p>' : '') +
       (r.teamNote ? '<div class="card" style="margin-top:22px;"><strong>Note from The Color Code team</strong><p style="margin-top:6px;">' + esc(r.teamNote) + '</p></div>' : '') +
       '<section class="result-block"><h2 class="section-title">Colors to wear</h2><div class="swatch-grid">' + swatches(s.wear) + '</div></section>' +
-      '<section class="result-block"><h2 class="section-title">A few to avoid</h2><div class="swatch-grid">' + swatches(s.avoid) + '</div></section>' +
+      '<section class="result-block"><h2 class="section-title">A few to avoid</h2><p class="form-note" style="margin-top:4px;">' + s.avoidWhy + '</p><div class="swatch-grid">' + swatches(s.avoid) + '</div></section>' +
       '<section class="result-block"><h2 class="section-title">Your makeup shades</h2>' +
         '<h3 class="result-sub">Lip</h3><div class="swatch-grid">' + swatches(s.lip) + '</div>' +
         '<h3 class="result-sub">Blush</h3><div class="swatch-grid">' + swatches(s.blush) + '</div>' +
         '<h3 class="result-sub">Eye</h3><div class="swatch-grid">' + swatches(s.eye) + '</div></section>' +
       '<section class="result-block"><p class="form-note">' + savedNote + '</p>' +
+      '<details class="not-right"><summary>Doesn\'t look right?</summary><p>Retake it with a new selfie by a window, bare-faced or in light makeup, or skip the photo and answer the questions alone. Lighting and foundation are the most common reasons a photo reads differently. If it still looks off, message us on Instagram <a href="https://www.instagram.com/thecolorcode.collective/">@thecolorcode.collective</a>.</p></details>' +
       '<p style="margin-top:18px;"><a class="btn-primary" href="start-your-analysis.html">Retake the quiz</a></p></section>';
   }
 }

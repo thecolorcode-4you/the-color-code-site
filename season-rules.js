@@ -17,9 +17,9 @@ export function cleanAnswers(raw) {
 }
 
 export var LABELS = {
-  veins: { blue_purple: 'blue or purple veins', green: 'green veins', mix: 'a mix of blue and green veins' },
+  veins: { blue_purple: 'blue or purple veins', green: 'green veins', mix: 'a mix of blue and green veins', cant_tell: 'veins she couldn\'t make out' },
   jewelry: { silver: 'silver jewelry', gold: 'gold jewelry', both: 'both gold and silver' },
-  sun: { burn: 'burning easily in the sun', burn_then_tan: 'burning, then tanning', tan: 'tanning easily' },
+  sun: { burn: 'burning easily in the sun', burn_then_tan: 'burning, then tanning', tan: 'tanning easily', rarely_burn: 'skin that rarely burns and just deepens' },
   hair: { platinum: 'platinum or light blonde hair', golden: 'golden or strawberry blonde hair', ash: 'ash or dark blonde hair', light_brown: 'light brown hair', medium_brown: 'medium brown hair', dark_brown: 'dark brown hair', black: 'black hair', red: 'red or auburn hair' },
   eyes: { light_blue_gray: 'light blue or gray eyes', bright_blue: 'bright blue eyes', green: 'green eyes', hazel: 'hazel eyes', light_brown: 'light brown eyes', dark_brown: 'dark brown eyes', black_brown: 'very dark brown eyes' },
   white: { bright: 'bright white', ivory: 'soft ivory', both: 'white or ivory alike' },
@@ -38,7 +38,7 @@ export function pickSeason(a) {
   var d = 0;
   d += { platinum: -2, golden: -1.5, ash: -1, light_brown: -0.5, medium_brown: 0.5, red: 0, dark_brown: 1.5, black: 2 }[a.hair] || 0;
   d += { light_blue_gray: -1, bright_blue: -0.5, green: -0.5, hazel: 0, light_brown: 0, dark_brown: 1, black_brown: 1.5 }[a.eyes] || 0;
-  d += { burn: -0.5, burn_then_tan: 0, tan: 0.5 }[a.sun] || 0;
+  d += { burn: -0.5, burn_then_tan: 0, tan: 0.5, rarely_burn: 1 }[a.sun] || 0;
 
   // Clarity: negative = soft/muted, positive = bright/clear.
   var c = 0;
@@ -69,7 +69,9 @@ var WHITE_PHRASE = { bright: 'your pull toward bright white', ivory: 'your pull 
 export function reasonFor(season, a) {
   var s = SEASONS[season];
   var temp = s.family === 'Spring' || s.family === 'Autumn' ? 'warm' : 'cool';
-  var first = VEIN_PHRASE[a.veins] + ', ' + JEWELRY_PHRASE[a.jewelry] + ' and ' + WHITE_PHRASE[a.white] + ' point to a ' + temp + ' undertone.';
+  // Only name what she actually told us: "I can't tell" leaves the veins out.
+  var signs = [VEIN_PHRASE[a.veins], JEWELRY_PHRASE[a.jewelry], WHITE_PHRASE[a.white]].filter(Boolean);
+  var first = signs.slice(0, -1).join(', ') + ' and ' + signs[signs.length - 1] + ' point to a ' + temp + ' undertone.';
   first = first.charAt(0).toUpperCase() + first.slice(1);
   var second = 'Paired with your ' + LABELS.hair[a.hair] + ' and ' + LABELS.eyes[a.eyes] + ', that places you in ' + season + ': ' + s.summary.charAt(0).toLowerCase() + s.summary.slice(1);
   return first + ' ' + second;

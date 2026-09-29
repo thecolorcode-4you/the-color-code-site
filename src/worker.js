@@ -59,6 +59,8 @@ async function analyze(request, env) {
     'Look only at colors in the selfie: skin undertone (warm, cool or neutral), skin depth (light, medium or deep), ' +
     'eye color, natural hair color, and the contrast between them. Weigh the photo together with her questionnaire answers; ' +
     'when the photo and answers disagree, trust what you can clearly see, unless the lighting is colored or dim. ' +
+    'Skin depth is not undertone: deep, medium and light skin can each be warm, cool or neutral, and deep skin belongs in whichever season its undertone and contrast fit, often an Autumn. ' +
+    'Never choose a Winter season just because skin is deep, and never choose a Spring or Summer just because skin is light. ' +
     'Never guess or mention ethnicity, age, weight or attractiveness. ' +
     'If there is no clear face, or the lighting, a filter or heavy makeup makes the coloring impossible to read, set photo_usable to false.\n\n' +
     'Reply with only a JSON object and nothing else: ' +

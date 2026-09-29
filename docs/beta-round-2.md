@@ -56,3 +56,22 @@ Also noticed: every season's makeup shades are the same no matter how light or d
 The stand-in can't tell us whether the real AI gets deep skin right. Before promoting to Panhellenic, **a teammate or friend with deep skin should take a real selfie by a window, bare-faced**, answer honestly, and note: the season, the two-sentence reason, and whether they agree. Then repeat in different daylight to see if the season stays the same. That's the Principle 3 check: fewer than 7 in 10 agreeing, or two different seasons from two photos, would mean the analysis isn't reliable yet.
 
 *Not fixed yet. These go into the next round of changes.*
+
+---
+
+## What we changed after round 2
+
+| Aaliyah's problem | Fix |
+|---|---|
+| "A mix / can't tell" turned into "veins that look both blue and green" | Split into two answers: **"A mix of both"** and **"I can't tell."** When she can't tell, her result leaves the veins out entirely and the AI is told "veins she couldn't make out." All 8,064 answer combinations checked for broken wording: zero problems. |
+| No sun option for skin that rarely burns | Added **"I rarely burn — my skin just gets deeper."** It counts toward skin depth only, not warmth, so it can't push anyone warm or cool on its own. |
+| Nothing about makeup before the selfie | Selfie tips now say "bare skin or light makeup — foundation can hide your undertone." |
+| Bella's AI instructions didn't guard against "deep = Winter" | Added: *"Skin depth is not undertone: deep, medium and light skin can each be warm, cool or neutral, and deep skin belongs in whichever season its undertone and contrast fit, often an Autumn. Never choose a Winter season just because skin is deep, and never choose a Spring or Summer just because skin is light."* |
+| FAQ "What happens to my photos?" was a TODO box with internal notes | Replaced with the real answer: photo optional, used once, deleted, never saved or seen, shrunk and stripped of location data; what we do keep (answers and season, email if she has an account); the team sees answers and seasons, never photos; research is optional; a full written policy is being finalized. |
+| FAQ promised a redo button that doesn't exist | Now says: retake any time, free, with tips (window light, bare skin or light makeup, or skip the photo), and message us on Instagram @thecolorcode.collective if it still looks off. The result page has the same help under **"Doesn't look right?"** |
+| FAQ "How long?" promised instant results, downloads and emails | Now: about a minute, about 15 seconds for a selfie, shown in the app, kept on the phone, saved to the account if she has one. |
+| Avoid colors had no reason | Each season now has a one-line reason under "A few to avoid" (Deep Autumn: "These pale, icy shades wash out your deep, warm coloring."). Written by the agent as placeholders in `palettes.js` for Bella to review with her real palettes. |
+
+**Re-tested as Aaliyah after the fixes** ("I can't tell" veins, "I rarely burn", selfie): Deep Autumn from the photo; the avoid reason and "Doesn't look right?" help show; the AI now receives "veins she couldn't make out", "skin that rarely burns and just deepens", and the depth-is-not-undertone rule. With the AI down, the fallback reason no longer mentions veins. The server, selfie and account tests from earlier all still pass.
+
+**Still open:** the real-phone test with a deep-skinned tester (see above); makeup shades that vary by skin depth, for Bella's real palettes; the FAQ's pricing and refund TODO boxes.
