@@ -1,6 +1,14 @@
 {
-  // Static site only: every file in this folder is served as-is. No server code.
+  // The site's pages are served as-is from this folder. Only /api/* runs server code
+  // (src/worker.js), which sends selfies to Cloudflare's free image-reading AI.
   "name": "the-color-code-site",
+  "main": "src/worker.js",
   "compatibility_date": "2025-09-01",
-  "assets": { "directory": "." }
+  "assets": {
+    "directory": ".",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"]
+  },
+  "ai": { "binding": "AI" },
+  "observability": { "enabled": true }
 }

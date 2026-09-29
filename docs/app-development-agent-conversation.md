@@ -147,3 +147,30 @@ The app version is built and tested. On iPhone (Safari) a card says "Get The Col
 ---
 
 *This log continues below as we keep working.*
+
+**Agent (after building free accounts):**
+The account pages are built and tested with a stand-in for Supabase. To switch them on, a teammate creates the free Supabase project (about 10 minutes) and sends two values:
+1. Create the free project: https://supabase.com/dashboard/new (Free plan, East US; save the database password).
+2. Create the tables and privacy rules: https://supabase.com/dashboard/project/_/sql/new, paste `supabase/schema.sql`, Run.
+3. Tell Supabase the site's address: https://supabase.com/dashboard/project/_/auth/url-configuration. Site URL is the workers.dev address; add `https://the-color-code-site.thecolorcode-mktg4250.workers.dev/**` under Redirect URLs.
+4. Emails: for now, turn off "Confirm email" at https://supabase.com/dashboard/project/_/auth/providers → Email. For real password-reset emails to customers, connect a free email sender such as Resend at https://supabase.com/dashboard/project/_/auth/smtp.
+5. Send the Project URL and the publishable (anon) key from https://supabase.com/dashboard/project/_/settings/api-keys. Never the secret or service_role key.
+6. After all five of us have created accounts, send the five emails so the agent can give us the one line that adds us to the team list.
+
+Pushing to `main` is safe before Supabase is ready: without the keys, the site behaves exactly as it does today.
+
+---
+
+## 6. Selfie analysis with the camera
+
+**Team:**
+> now make the app able to analyze a photo where the user opens the camera thorugh the app and then with that photo the color code analyzes and gives a color palette
+
+*[Built:*
+- *a **selfie step** at the top of the quiz: **Take a selfie** opens the phone's front camera inside the app; "Upload a photo instead" picks one from the camera roll; a round preview with "Remove photo". Above the buttons: "What happens to your photo: it's used once, only to read your skin, eye and hair color, and deleted as soon as your result is back. It is never saved to your account, our database or anywhere else, and no one on our team sees it." Tips: face a window, no filter, hair pulled back. The selfie stays optional, and the six answers alone still give a season;*
+- *on the phone, the photo is **shrunk and re-saved** before sending: faster, and it strips hidden photo data such as location;*
+- *a small **server function** (`/api/analyze`, in `src/worker.js`) that sends the selfie and the six answers to **Cloudflare's free image-reading AI** (Llama 4 Scout). Bella's instructions tell it to look only at colors (skin undertone and depth, eyes, hair, contrast), never guess ethnicity, age or weight, pick exactly one of the twelve seasons, and explain in two plain sentences. The photo is never stored or logged;*
+- *safety nets: the AI can only return one of our twelve season names, and the colors always come from `palettes.js`. If the AI invents a season, can't read the photo (dark, filtered, no face) or doesn't respond, she still gets a season from her answers, with a note saying so;*
+- *the result page says "Based on your selfie and your six answers. Your photo has been deleted." or "Based on your six answers."; the team screen records which method was used.*
+
+*Tested: the server function with a stand-in AI in seven cases (good answer, answer wrapped in extra text, invented season, unreadable photo, AI down, no photo, incomplete answers), all handled correctly. Then the whole flow at phone size using the real server code: the camera button opens the front camera; the photo was sent shrunk to about 15 KB; the result came back as Soft Autumn with a two-sentence reason; the photo was not left anywhere on the phone; no sideways scrolling, no errors.]*

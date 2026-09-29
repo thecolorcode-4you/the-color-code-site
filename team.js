@@ -1,6 +1,6 @@
 // The Color Code — team screen: every result and every set of answers, with a reply box.
 import { supabase, currentUser, isTeam, esc } from './supabase-client.js';
-import { LABELS } from './analysis.js';
+import { LABELS } from './season-rules.js';
 
 var root = document.querySelector('[data-team]');
 var user = await currentUser();

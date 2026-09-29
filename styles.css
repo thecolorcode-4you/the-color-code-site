@@ -252,3 +252,15 @@ h2.section-title { font-size: 30px; margin-bottom: 8px; }
 .team-answers { margin: 10px 0 12px; padding-left: 18px; font-size: 13.5px; color: var(--text-muted); }
 .team-row textarea { width: 100%; min-height: 64px; margin: 6px 0 8px; padding: 9px 11px; border: 1px solid var(--border); border-radius: 3px; font: 15px 'Manrope', sans-serif; background: var(--bg); }
 .btn-small { background: var(--accent); color: var(--on-accent); border: none; border-radius: 3px; padding: 8px 14px; font: 600 13.5px 'Manrope', sans-serif; cursor: pointer; }
+
+/* Selfie */
+.selfie-box { background: var(--accent-tint); border-color: transparent; }
+.optional { font-weight: 400; color: var(--text-muted); font-size: 13px; }
+.privacy-promise { font-size: 14px; line-height: 1.5; background: var(--bg); border-radius: 4px; padding: 12px 14px; margin: 8px 0 10px; }
+.selfie-tips { margin: 0 0 14px; padding-left: 18px; font-size: 13.5px; color: var(--text-muted); }
+.selfie-actions { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; margin-bottom: 12px; }
+.selfie-btn { cursor: pointer; }
+.link-btn { background: none; border: none; padding: 0; color: var(--accent-deep); text-decoration: underline; font: 500 14.5px 'Manrope', sans-serif; cursor: pointer; }
+.selfie-preview { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+.selfie-preview img { width: 96px; height: 96px; object-fit: cover; border-radius: 50%; border: 3px solid var(--bg); }
+.method-line { margin-top: 10px; font-size: 13.5px; color: var(--text-muted); }
