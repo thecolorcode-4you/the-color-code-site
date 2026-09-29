@@ -174,3 +174,37 @@ Pushing to `main` is safe before Supabase is ready: without the keys, the site b
 - *the result page says "Based on your selfie and your six answers. Your photo has been deleted." or "Based on your six answers."; the team screen records which method was used.*
 
 *Tested: the server function with a stand-in AI in seven cases (good answer, answer wrapped in extra text, invented season, unreadable photo, AI down, no photo, incomplete answers), all handled correctly. Then the whole flow at phone size using the real server code: the camera button opens the front camera; the photo was sent shrunk to about 15 KB; the result came back as Soft Autumn with a two-sentence reason; the photo was not left anywhere on the phone; no sideways scrolling, no errors.]*
+
+**Team:**
+> push to main
+
+*[Pushed to main. The Cloudflare build failed. The agent compared build results across commits and asked for the build log.]*
+
+**Team (pasted the Cloudflare build log):**
+> ✘ [ERROR] A request to the Cloudflare API (/accounts/…/workers/workers/the-color-code-site) failed. Authentication error [code: 10000] … It looks like you are authenticating Wrangler via a custom API token set in an environment variable. Please ensure it has the correct permissions for this operation. … ✘ [ERROR] A request to the Cloudflare API (/accounts) failed. Invalid access token [code: 9109] … Failed: error occurred while running deploy command
+
+**Agent:**
+The problem isn't the code: the API token Cloudflare uses for automatic builds has stopped working (`Invalid access token`). Fix: Cloudflare → the-color-code-site → Settings → Build → API token → edit → **Create new token** → Save; then Deployments → the latest build → **Retry build**.
+
+**Team:**
+> the build worked
+
+*[The agent confirmed on GitHub that the Cloudflare build for the selfie-analysis commit finished successfully. The live app now has the phone install, the selfie analysis, and the account pages, which switch on once the Supabase keys are added.]*
+
+---
+
+## 7. Simulated users
+
+**Team:**
+> Invent six different people who would use our app: who they are, what they want from it, how much time and money they have, and what would make them give up. Include the other people our business needs in it, like [the friends who vote / the lenders / the venues]. Then fill the app with realistic examples from those people, labeled as examples, so a new customer sees it working.
+
+*[The agent invented six people (full profiles in `docs/personas.md`):*
+- *four customers: **Maddie** (formal-dress shopper), **Aaliyah** (deep skin tone, makeup first, skeptical of quizzes that call her a Winter), **Priya** (busy pre-med, won't upload a photo), **Chloe** (new member who found us on TikTok);*
+- *the two other people the business needs: **Hannah**, a chapter sisterhood chair who would book a color night, and **Dana**, Panhellenic VP of Programming, the partner who brings the audience.*
+
+*It then filled the app with examples, each labeled "Example — simulated tester, not a real customer":*
+- ***Results & Benefits:** four example result cards (Maddie Light Summer, Aaliyah Deep Autumn, Priya Deep Winter, Chloe Light Spring), with the reason and palette dots. Seasons come from running each person's quiz answers through the app's real rules. The first run put Aaliyah and Priya both in Deep Autumn, so Priya's answers were changed to cooler ones to show variety;*
+- *a **Chapter color night** section, labeled "coming later," with an example season spread for a simulated 24-member chapter (9 of 12 seasons, names grouped by season). A member named "Bella" in that example was renamed so she isn't confused with our color agent;*
+- ***Customer Reviews:** "No real reviews yet," then four example reviews, not all five stars. Aaliyah's is 4 stars and asks for foundation guidance; Chloe asks for a one-tap Instagram Story share.*
+
+*Checked at phone width: all cards render, no sideways scrolling, no errors.]*
