@@ -251,3 +251,18 @@ The problem isn't the code: the API token Cloudflare uses for automatic builds h
 > fix it
 
 *[The agent fixed round 2's findings (full table in `docs/beta-round-2.md`): split "A mix / can't tell" into two answers, with "I can't tell" left out of the reason and passed to the AI as such; added "I rarely burn — my skin just gets deeper" (counts toward depth only, not warmth); added "bare skin or light makeup" to the selfie tips; added a rule to Bella's AI instructions that skin depth is not undertone and deep skin must never be put in Winter just for being deep; replaced the FAQ's photo TODO with the real answer; replaced the false redo and "instant, download, email" claims with what the app actually does; added a "Doesn't look right?" help section and a one-line reason under each season's avoid colors. Re-ran Aaliyah's path and all earlier tests: all pass. 8,064 answer combinations checked for broken wording: none.]*
+
+**Team:**
+> push to main
+
+*[Pushed; the Cloudflare build succeeded.]*
+
+**Team (Whitney):**
+> this is whitney, give me options for the FAQ what happens to my photos? question
+
+**Agent:** First, an accuracy note: the photo is shrunk and stripped of location data on the phone, sent once to our server function, which passes it to Cloudflare's AI service to read the coloring, then dropped. Our code never stores or logs it, and no one on the team can see it. Since it does pass through Cloudflare's AI, it's better not to promise it's never saved "anywhere," and Cloudflare's own retention terms should be checked before the full privacy policy. Three options: **A — short and reassuring** (best on a phone); **B — plain-language breakdown** (names Cloudflare's AI, lists what we do and don't keep; most transparent); **C — warm, in the team's voice**. Recommended B for accuracy and for skeptical customers and Panhellenic; A as the short version.
+
+**Team (Whitney):**
+> option A then go back to pushing the changes onto the app
+
+*[The agent put Option A on the FAQ: "Your selfie is optional. If you take one, it's used once, only to read your skin, eye and hair color, and deleted as soon as your result is back. We never save it, and no one on our team ever sees it. Rather not share a photo? Skip it — your six answers alone still give you a season." Then saved and pushed it live.]*
