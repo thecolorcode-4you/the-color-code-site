@@ -226,3 +226,23 @@ The problem isn't the code: the API token Cloudflare uses for automatic builds h
 > fix it
 
 *[The agent fixed round 1's findings (full table in `docs/beta-round-1.md`): removed the staging banner and footer notes from every page; changed "Upload a few photos" to "Take a selfie (optional)…"; trimmed the start page so the first question is 1.2 screens down instead of 2.4; added a **Skip the photo** button that jumps to question 1; rewrote the reason sentence and checked all 4,536 answer combinations for broken wording; reworded the pilot-palette label; showed the account preview only when accounts are on; moved the install card to after the result. Re-ran Priya's path and the earlier account and selfie tests: all pass.]*
+
+**Team:**
+> save and push to main
+
+*[Saved and pushed; the Cloudflare build succeeded and the round 1 fixes went live.]*
+
+---
+
+## 9. Beta round 2 — Aaliyah
+
+**Team:**
+> run aaliyah beta test
+
+*[The agent played Aaliyah (deep skin, wears makeup daily, skeptical because other quizzes call her a Winter). She checked the FAQ before uploading, then took a selfie and answered honestly, including "A mix / can't tell" for veins. The agent ran it on the exact live code at iPhone size, with a stand-in for Cloudflare's AI (which it can't reach), once with the AI answering and once with it down. It also read the instructions Bella gives the AI, looking for Aaliyah's fear. Full record: `docs/beta-round-2.md`.]*
+
+**Agent (as Aaliyah), summary:** Got Deep Autumn "based on your selfie and your six answers," with brick and berry lip shades that suit her. But she lost trust at: the FAQ's "What happens to my photos?" being a TODO box with internal team notes, and the FAQ promising a redo that doesn't exist; "can't tell" being turned into "veins that look both blue and green" in her result and in what the AI is told; no mention of makeup before the selfie; no sun option for skin that rarely burns; no reason for the avoid colors; and Bella's AI instructions not saying deep skin isn't automatically Winter.
+
+**Three changes that would have helped most:** (1) treat "can't tell" as "can't tell" and add a "rarely burn, skin deepens" sun option; (2) add "bare skin or light makeup" to the selfie tips and tell the AI that depth is not undertone; (3) replace the FAQ TODO with the real photo promise, fix or remove the redo claim, and explain the avoid colors.
+
+**Still needed from the team:** a real selfie test by someone with deep skin, bare-faced by a window, twice in different daylight, to check the real AI's season (Principle 3).
