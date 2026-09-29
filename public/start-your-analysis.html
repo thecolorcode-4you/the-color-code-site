@@ -5,13 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title>Start Your Analysis with Bella — The Color Code</title>
-<meta name="description" content="Submit your photos and a short questionnaire to start your personal color analysis with The Color Code.">
+<meta name="description" content="Answer six quick questions and get your season, palette and makeup shades from The Color Code.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#B5675F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Color Code">
+<link rel="apple-touch-icon" href="assets/logo.png">
 <link rel="stylesheet" href="styles.css?v=3">
 </head>
 <body>
-<div class="banner">STAGING PREVIEW — for team testing only. Accounts and submissions are really saved; please don't invite customers until the privacy policy is approved.</div>
+<div class="banner">Tulane pilot — free. Free accounts are in team testing until our privacy policy is approved.</div>
 
 <header class="site-nav">
   <div class="wrap">
@@ -37,159 +42,27 @@
       <h1 class="page-title">Start Your Analysis with Bella</h1>
       <p class="lede">Bella is our AI color-analysis agent — she reviews every submission automatically, applying the same method every time. No manual review, no wait on a human's schedule.</p>
 
-      <p class="lede" style="margin-top:12px;">Your results are ready instantly. The moment you submit, your full report is ready to view on the site — with the option to download it or have it emailed to you.</p>
+      <p class="lede" style="margin-top:12px;">Answer six quick questions and see your season, your palette and your makeup shades right away.</p>
     </section>
 
     <section>
-      <h2 class="section-title">Your details</h2>
+      <h2 class="section-title">Six quick questions</h2>
+      <p class="lede">About a minute. No photo needed for the pilot quiz. You'll see your result right away, and you can save it to a free account.</p>
 
-      <div data-signed-out hidden>
-        <div class="card account-prompt">
-          <h3>Create your free account to start</h3>
-          <p>Your account keeps your photo private and gives you one place to see your palette when it's ready.</p>
-          <div class="button-row">
-            <a class="btn-primary" href="create-account.html?next=start-your-analysis.html">Create free account</a>
-            <a class="btn-secondary" href="sign-in.html?next=start-your-analysis.html">I already have one</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="todo">
-        <strong>Draft — questionnaire questions</strong>
-        Draft questions written by web-development for Whitney (color-analysis) to review. They cover the standard inputs for seasonal color analysis: hair, eyes, skin depth and undertone clues. Change or reword freely.
-      </div>
-
-      <form class="form-block" data-intake-form hidden novalidate>
-        <p class="form-note" data-signed-in-as></p>
-        <div class="field">
-          <label for="photo">Your photo</label>
-          <p class="form-note field-hint">One photo, taken in natural lighting, face-on. No filters, and makeup-free if you can.</p>
-          <input type="file" id="photo" name="photo" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" required>
-        </div>
-
-        <div class="field">
-          <label for="natural_hair">Your natural hair color (as it grows, even if you dye it)</label>
-          <select id="natural_hair" name="natural_hair" required>
-            <option value="">Choose one</option>
-            <option value="platinum-light-blonde">Platinum or light blonde</option>
-            <option value="golden-blonde">Golden blonde</option>
-            <option value="ash-dark-blonde">Ash or dark blonde</option>
-            <option value="light-brown">Light brown</option>
-            <option value="medium-brown">Medium brown</option>
-            <option value="dark-brown">Dark brown</option>
-            <option value="black">Black</option>
-            <option value="red-auburn">Red or auburn</option>
-            <option value="gray-silver">Gray or silver</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="hair_dyed">Is your hair dyed or highlighted in your photo?</label>
-          <select id="hair_dyed" name="hair_dyed" required>
-            <option value="">Choose one</option>
-            <option value="no">No</option>
-            <option value="yes">Yes</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="eye_color">Your eye color</label>
-          <select id="eye_color" name="eye_color" required>
-            <option value="">Choose one</option>
-            <option value="blue">Blue</option>
-            <option value="gray">Gray</option>
-            <option value="green">Green</option>
-            <option value="hazel">Hazel</option>
-            <option value="light-brown">Light brown or amber</option>
-            <option value="dark-brown">Dark brown</option>
-            <option value="black-brown">Very dark brown or black</option>
-            <option value="other">Something else</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="skin_depth">How light or deep is your skin?</label>
-          <select id="skin_depth" name="skin_depth" required>
-            <option value="">Choose one</option>
-            <option value="fair">Fair</option>
-            <option value="light">Light</option>
-            <option value="medium">Medium</option>
-            <option value="tan">Tan or olive</option>
-            <option value="deep">Deep</option>
-            <option value="very-deep">Very deep</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="veins">In daylight, what color do the veins on your inner wrist look?</label>
-          <select id="veins" name="veins" required>
-            <option value="">Choose one</option>
-            <option value="blue-purple">Blue or purple</option>
-            <option value="green-olive">Green or olive</option>
-            <option value="mix-cant-tell">A mix, or I can't tell</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="sun">What happens when you are in the sun without sunscreen?</label>
-          <select id="sun" name="sun" required>
-            <option value="">Choose one</option>
-            <option value="burn-rarely-tan">I burn and rarely tan</option>
-            <option value="burn-then-tan">I burn first, then tan</option>
-            <option value="tan-rarely-burn">I tan easily and rarely burn</option>
-            <option value="rarely-burn-or-tan">I rarely burn or noticeably tan</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="jewelry">Which jewelry looks better on you?</label>
-          <select id="jewelry" name="jewelry" required>
-            <option value="">Choose one</option>
-            <option value="silver">Silver</option>
-            <option value="gold">Gold</option>
-            <option value="both">Both look good</option>
-            <option value="not-sure">I'm not sure</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="white">Which looks better next to your face?</label>
-          <select id="white" name="white" required>
-            <option value="">Choose one</option>
-            <option value="bright-white">Bright white</option>
-            <option value="cream">Cream or off-white</option>
-            <option value="both">Both look good</option>
-            <option value="not-sure">I'm not sure</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="compliment_colors">Colors people compliment you in (optional)</label>
-          <input type="text" id="compliment_colors" name="compliment_colors" maxlength="300" placeholder="e.g. emerald green, soft pink">
-        </div>
-        <div class="field">
-          <label for="notes">Anything else we should know? (optional)</label>
-          <textarea id="notes" name="notes" maxlength="1000" placeholder="e.g. I wear self-tanner, or I'm mostly curious about makeup shades"></textarea>
-        </div>
-
+      <form class="form-block" data-analysis-form>
+        <fieldset class="quiz-q"><legend>1. Look at the veins on your inner wrist in daylight. What color are they?</legend><label class="choice"><input type="radio" name="veins" value="blue_purple" required><span>Blue or purple</span></label><label class="choice"><input type="radio" name="veins" value="green" required><span>Green</span></label><label class="choice"><input type="radio" name="veins" value="mix" required><span>A mix / can't tell</span></label></fieldset><fieldset class="quiz-q"><legend>2. Which looks better on you?</legend><label class="choice"><input type="radio" name="jewelry" value="silver" required><span>Silver jewelry</span></label><label class="choice"><input type="radio" name="jewelry" value="gold" required><span>Gold jewelry</span></label><label class="choice"><input type="radio" name="jewelry" value="both" required><span>Both look good</span></label></fieldset><fieldset class="quiz-q"><legend>3. How does your skin react to the sun?</legend><label class="choice"><input type="radio" name="sun" value="burn" required><span>I burn easily</span></label><label class="choice"><input type="radio" name="sun" value="burn_then_tan" required><span>I burn, then tan</span></label><label class="choice"><input type="radio" name="sun" value="tan" required><span>I tan easily</span></label></fieldset><fieldset class="quiz-q"><legend>4. What is your natural hair color?</legend><label class="choice"><input type="radio" name="hair" value="platinum" required><span>Platinum / light blonde</span></label><label class="choice"><input type="radio" name="hair" value="golden" required><span>Golden / strawberry blonde</span></label><label class="choice"><input type="radio" name="hair" value="ash" required><span>Ash / dark blonde</span></label><label class="choice"><input type="radio" name="hair" value="light_brown" required><span>Light brown</span></label><label class="choice"><input type="radio" name="hair" value="medium_brown" required><span>Medium brown</span></label><label class="choice"><input type="radio" name="hair" value="dark_brown" required><span>Dark brown</span></label><label class="choice"><input type="radio" name="hair" value="black" required><span>Black</span></label><label class="choice"><input type="radio" name="hair" value="red" required><span>Red / auburn</span></label></fieldset><fieldset class="quiz-q"><legend>5. What color are your eyes?</legend><label class="choice"><input type="radio" name="eyes" value="light_blue_gray" required><span>Light blue / gray</span></label><label class="choice"><input type="radio" name="eyes" value="bright_blue" required><span>Bright blue</span></label><label class="choice"><input type="radio" name="eyes" value="green" required><span>Green</span></label><label class="choice"><input type="radio" name="eyes" value="hazel" required><span>Hazel</span></label><label class="choice"><input type="radio" name="eyes" value="light_brown" required><span>Light brown</span></label><label class="choice"><input type="radio" name="eyes" value="dark_brown" required><span>Dark brown</span></label><label class="choice"><input type="radio" name="eyes" value="black_brown" required><span>Very dark brown / black</span></label></fieldset><fieldset class="quiz-q"><legend>6. Which looks better near your face?</legend><label class="choice"><input type="radio" name="white" value="bright" required><span>Bright white</span></label><label class="choice"><input type="radio" name="white" value="ivory" required><span>Soft ivory / cream</span></label><label class="choice"><input type="radio" name="white" value="both" required><span>Both look fine</span></label></fieldset>
         <div class="checkbox-field">
-          <input type="checkbox" id="consent-analysis" name="consent_analysis" value="yes" required>
-          <label for="consent-analysis">
-            I agree that the photos and answers I submit will be used only to create my color analysis report, and for no other purpose. (<a href="privacy-policy.html" target="_blank">Privacy policy</a>)
-          </label>
+          <input type="checkbox" id="consent-analysis" name="consent-analysis" required>
+          <label for="consent-analysis">I agree that my answers will be used only to create my color analysis, and for no other purpose.</label>
         </div>
         <div class="checkbox-field">
-          <input type="checkbox" id="consent-research" name="consent_research" value="yes">
-          <label for="consent-research">
-            I'd also like to help improve The Color Code by allowing my anonymized data to be used for research. (Optional — this won't affect my report.)
-          </label>
+          <input type="checkbox" id="consent-research" name="consent-research">
+          <label for="consent-research">I'd also like to help improve The Color Code by allowing my anonymized answers to be used for research. (Optional — this won't affect my result.)</label>
         </div>
-
-        <p class="form-error" data-form-error role="alert" hidden></p>
-        <div>
-          <button class="btn-primary" type="submit">Submit my analysis</button>
-        </div>
+        <div><button class="btn-primary" type="submit">Get my season →</button></div>
       </form>
 
-      <div class="card account-prompt" data-submitted hidden>
-        <h3>Got it — your submission is saved.</h3>
-        <p>You can check on it any time from your account.</p>
-        <div class="button-row">
-          <a class="btn-primary" href="my-analysis.html">Go to My Analysis</a>
-        </div>
-      </div>
+      <p class="form-note" style="margin-top:20px;">Selfie analysis is coming soon. When it launches, your photo will be used only to read your coloring and deleted as soon as your result is back.</p>
     </section>
 
   </div>
@@ -215,5 +88,6 @@
 </footer>
 
 <script src="site.js?v=3"></script>
+<script type="module" src="analysis.js"></script>
 </body>
 </html>

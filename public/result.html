@@ -4,10 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>My Analysis — The Color Code</title>
-<meta name="description" content="Your The Color Code account and analysis status.">
+<title>Your Season — The Color Code</title>
+<meta name="description" content="Submit your photos and a short questionnaire to start your personal color analysis with The Color Code.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#B5675F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Color Code">
+<link rel="apple-touch-icon" href="assets/logo.png">
 <link rel="stylesheet" href="styles.css?v=3">
 </head>
 <body>
@@ -30,24 +35,7 @@
 </header>
 
 <main>
-  <div class="wrap">
-
-    <section data-dashboard hidden>
-      <p class="eyebrow">My Analysis</p>
-      <h1 class="page-title" data-greeting>Hi there</h1>
-      <p class="lede" data-account-email></p>
-
-      <div data-result-list class="result-list"></div>
-
-      <div class="empty-state" data-no-results hidden>
-        <h3>No saved palettes yet</h3>
-        <p>Answer six quick questions to get your season. It takes about a minute.</p>
-        <p style="margin-top:18px;"><a class="btn-primary" href="start-your-analysis.html">Start your analysis</a></p>
-      </div>
-
-      <p style="margin-top:40px;"><button class="btn-secondary" type="button" data-sign-out>Sign out</button></p>
-    </section>
-  </div>
+  <div class="wrap" data-result></div>
 </main>
 
 <footer class="site-footer">
@@ -70,5 +58,6 @@
 </footer>
 
 <script src="site.js?v=3"></script>
+<script type="module" src="analysis.js"></script>
 </body>
 </html>

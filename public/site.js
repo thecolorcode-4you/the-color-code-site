@@ -22,12 +22,7 @@ function trackEvent(name, detail) {
 
 // ---------- Accounts ----------
 
-var STATUS_LABELS = {
-  received: 'Received — our team is working on your palette',
-  ready: 'Your palette is ready',
-};
-
-// Resolves to { user, submissions } when signed in, or null.
+// Resolves to { user, results } when signed in, or null.
 var accountPromise = null;
 function loadAccount() {
   if (!accountPromise) {
@@ -68,7 +63,6 @@ function missingRequired(form) {
     if (empty) {
       field.focus();
       if (field.type === 'checkbox') return 'Please tick the required box to continue.';
-      if (field.type === 'file') return 'Please add your photo.';
       return 'Please fill in every required field.';
     }
   }
@@ -150,65 +144,6 @@ function initAuthForm() {
   });
 }
 
-function initIntakeForm() {
-  var intakeForm = document.querySelector('[data-intake-form]');
-  if (!intakeForm) return;
-  var signedOut = document.querySelector('[data-signed-out]');
-  var submitted = document.querySelector('[data-submitted]');
-  clearErrorOnEdit(intakeForm);
-
-  loadAccount().then(function (account) {
-    if (!account) {
-      signedOut.hidden = false;
-      return;
-    }
-    intakeForm.hidden = false;
-    intakeForm.querySelector('[data-signed-in-as]').textContent =
-      'Signed in as ' + account.user.email + '.';
-  });
-
-  var started = false;
-  intakeForm.addEventListener('focusin', function () {
-    if (!started) {
-      started = true;
-      trackEvent('intake_started');
-    }
-  });
-
-  intakeForm.addEventListener('submit', function (e) {
-    e.preventDefault();
-    var missing = missingRequired(intakeForm);
-    if (missing) return showError(intakeForm, missing);
-    var photo = intakeForm.photo.files[0];
-    if (photo && photo.size > 10 * 1024 * 1024) {
-      return showError(intakeForm, 'That photo is over 10 MB. Please choose a smaller one.');
-    }
-    showError(intakeForm, '');
-    setBusy(intakeForm, true, 'Uploading…');
-
-    fetch('/api/submissions', {
-      method: 'POST',
-      credentials: 'same-origin',
-      body: new FormData(intakeForm),
-    })
-      .then(function (res) {
-        return res.json().catch(function () { return {}; }).then(function (body) {
-          if (!res.ok) throw new Error(body.error || 'Something went wrong. Please try again.');
-        });
-      })
-      .then(function () {
-        trackEvent('intake_completed');
-        intakeForm.hidden = true;
-        submitted.hidden = false;
-        submitted.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      })
-      .catch(function (err) {
-        setBusy(intakeForm, false);
-        showError(intakeForm, err.message);
-      });
-  });
-}
-
 function initDashboard() {
   var dashboard = document.querySelector('[data-dashboard]');
   if (!dashboard) return;
@@ -222,38 +157,28 @@ function initDashboard() {
     dashboard.querySelector('[data-greeting]').textContent = 'Hi, ' + account.user.name.split(' ')[0] + '.';
     dashboard.querySelector('[data-account-email]').textContent = 'Signed in as ' + account.user.email;
 
-    var list = dashboard.querySelector('[data-submission-list]');
-    if (!account.submissions.length) {
-      dashboard.querySelector('[data-no-submissions]').hidden = false;
+    var list = dashboard.querySelector('[data-result-list]');
+    if (!account.results.length) {
+      dashboard.querySelector('[data-no-results]').hidden = false;
       return;
     }
-    account.submissions.forEach(function (s) {
-      var card = document.createElement('article');
-      card.className = 'card submission-card';
+    account.results.forEach(function (r) {
+      var card = document.createElement('a');
+      card.className = 'card result-card';
+      card.href = 'result.html?id=' + encodeURIComponent(r.id);
 
-      var img = document.createElement('img');
-      img.src = '/api/submissions/' + encodeURIComponent(s.id) + '/photo';
-      img.alt = 'The photo you submitted';
-      img.className = 'submission-photo';
-      img.loading = 'lazy';
-
-      var info = document.createElement('div');
       var title = document.createElement('h3');
-      title.textContent = 'Analysis submitted ' + formatDate(s.created_at);
-      var status = document.createElement('p');
-      status.className = 'status-pill status-' + s.status;
-      status.textContent = STATUS_LABELS[s.status] || s.status;
-      var note = document.createElement('p');
-      note.className = 'form-note';
-      note.textContent = s.status === 'ready'
-        ? ''
-        : "We'll show your season and palette right here as soon as it's ready.";
-      info.appendChild(title);
-      info.appendChild(status);
-      info.appendChild(note);
+      title.textContent = r.season;
+      var date = document.createElement('p');
+      date.className = 'form-note';
+      date.textContent = 'Saved ' + formatDate(r.created_at);
+      var open = document.createElement('p');
+      open.className = 'result-card-link';
+      open.textContent = 'See your palette →';
 
-      card.appendChild(img);
-      card.appendChild(info);
+      card.appendChild(title);
+      card.appendChild(date);
+      card.appendChild(open);
       list.appendChild(card);
     });
   });
@@ -270,7 +195,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   initAccountLink();
   initAuthForm();
-  initIntakeForm();
   initDashboard();
 
   var reviewForm = document.querySelector('[data-review-form]');

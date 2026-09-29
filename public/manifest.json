@@ -1,0 +1,9 @@
+{
+  "name": "The Color Code",
+  "short_name": "Color Code",
+  "start_url": "start-your-analysis.html",
+  "display": "standalone",
+  "background_color": "#FAF8F4",
+  "theme_color": "#B5675F",
+  "icons": [{ "src": "assets/logo.png", "sizes": "424x296", "type": "image/png" }]
+}

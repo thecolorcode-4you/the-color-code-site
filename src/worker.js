@@ -1,35 +1,17 @@
-// The Color Code — backend for accounts and analysis submissions.
+// The Color Code — backend for free accounts and saved quiz results.
 //
 // Static pages in /public are served directly by Cloudflare. Only /api/* requests reach this
 // Worker (see run_worker_first in wrangler.jsonc).
 //
-// Storage:
-//   DB     (D1)  — users, sessions, submissions
-//   PHOTOS (R2)  — uploaded analysis photos, never public; served only to the owner (and, in
-//                  step 2, the team)
+// Storage: DB (D1) — users, sessions and saved quiz results. No photos are collected.
+
+import { QUIZ_KEYS, pickSeason, validAnswers } from '../public/season-rules.js';
 
 const SESSION_COOKIE = 'tcc_session';
 const SESSION_DAYS = 30;
 const PBKDF2_ITERATIONS = 100000; // Workers' maximum for PBKDF2
-const MAX_PHOTO_BYTES = 10 * 1024 * 1024;
-const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
 // Bump whenever privacy-policy.html changes, so we know which version each person agreed to.
-const PRIVACY_POLICY_VERSION = 'draft-2026-09-24';
-
-// Draft questionnaire (pending Whitney's review). Keys must match the form in
-// start-your-analysis.html. `options` lists the allowed answers; free-text questions omit it.
-const QUESTIONS = {
-  natural_hair: { required: true, options: ['platinum-light-blonde', 'golden-blonde', 'ash-dark-blonde', 'light-brown', 'medium-brown', 'dark-brown', 'black', 'red-auburn', 'gray-silver'] },
-  hair_dyed: { required: true, options: ['no', 'yes'] },
-  eye_color: { required: true, options: ['blue', 'gray', 'green', 'hazel', 'light-brown', 'dark-brown', 'black-brown', 'other'] },
-  skin_depth: { required: true, options: ['fair', 'light', 'medium', 'tan', 'deep', 'very-deep'] },
-  veins: { required: true, options: ['blue-purple', 'green-olive', 'mix-cant-tell'] },
-  sun: { required: true, options: ['burn-rarely-tan', 'burn-then-tan', 'tan-rarely-burn', 'rarely-burn-or-tan'] },
-  jewelry: { required: true, options: ['silver', 'gold', 'both', 'not-sure'] },
-  white: { required: true, options: ['bright-white', 'cream', 'both', 'not-sure'] },
-  compliment_colors: { required: false, maxLength: 300 },
-  notes: { required: false, maxLength: 1000 },
-};
+const PRIVACY_POLICY_VERSION = 'draft-2026-09-29';
 
 const SCHEMA = [
   `CREATE TABLE IF NOT EXISTS users (
@@ -47,21 +29,17 @@ const SCHEMA = [
     expires_at TEXT NOT NULL
   )`,
   `CREATE INDEX IF NOT EXISTS sessions_user ON sessions (user_id)`,
-  `CREATE TABLE IF NOT EXISTS submissions (
+  `CREATE TABLE IF NOT EXISTS results (
     id TEXT PRIMARY KEY,
     user_id TEXT NOT NULL,
-    photo_key TEXT NOT NULL,
-    photo_type TEXT NOT NULL,
+    season TEXT NOT NULL,
     answers TEXT NOT NULL,
     consent_analysis INTEGER NOT NULL,
     consent_research INTEGER NOT NULL,
     privacy_policy_version TEXT NOT NULL,
-    status TEXT NOT NULL DEFAULT 'received',
-    result TEXT,
-    created_at TEXT NOT NULL,
-    updated_at TEXT NOT NULL
+    created_at TEXT NOT NULL
   )`,
-  `CREATE INDEX IF NOT EXISTS submissions_user ON submissions (user_id, created_at)`,
+  `CREATE INDEX IF NOT EXISTS results_user ON results (user_id, created_at)`,
 ];
 
 // Tables are created on first use, so the database needs no manual setup step.
@@ -103,10 +81,7 @@ async function route(request, env, url) {
   if (pathname === '/api/login' && method === 'POST') return login(request, env);
   if (pathname === '/api/logout' && method === 'POST') return logout(request, env);
   if (pathname === '/api/me' && method === 'GET') return me(request, env);
-  if (pathname === '/api/submissions' && method === 'POST') return createSubmission(request, env);
-
-  const photoMatch = pathname.match(/^\/api\/submissions\/([\w-]+)\/photo$/);
-  if (photoMatch && method === 'GET') return submissionPhoto(request, env, photoMatch[1]);
+  if (pathname === '/api/results' && method === 'POST') return saveResult(request, env);
 
   return json({ error: 'Not found.' }, 404);
 }
@@ -168,105 +143,47 @@ async function me(request, env) {
   if (!user) return json({ error: 'Not signed in.' }, 401);
 
   const { results } = await env.DB.prepare(
-    'SELECT id, status, result, created_at, updated_at FROM submissions WHERE user_id = ? ORDER BY created_at DESC'
+    'SELECT id, season, answers, created_at FROM results WHERE user_id = ? ORDER BY created_at DESC'
   ).bind(user.id).all();
 
   return json({
     user: { name: user.name, email: user.email, role: user.role },
-    submissions: results.map((s) => ({
-      id: s.id,
-      status: s.status,
-      result: s.result ? JSON.parse(s.result) : null,
-      created_at: s.created_at,
-      updated_at: s.updated_at,
+    results: results.map((r) => ({
+      id: r.id,
+      season: r.season,
+      answers: JSON.parse(r.answers),
+      created_at: r.created_at,
     })),
   });
 }
 
-// ---------- Submissions ----------
+// ---------- Quiz results ----------
 
-async function createSubmission(request, env) {
+// Saves a quiz result to the signed-in account. The season is worked out again here from the
+// answers with the same rules the quiz uses, so a saved season always matches its answers.
+async function saveResult(request, env) {
   const user = await currentUser(request, env);
-  if (!user) return json({ error: 'Please sign in to submit your analysis.' }, 401);
+  if (!user) return json({ error: 'Please sign in to save your palette.' }, 401);
 
-  let form;
-  try {
-    form = await request.formData();
-  } catch {
-    return json({ error: "We couldn't read that submission. Please try again." }, 400);
+  const body = await readJson(request);
+  if (body.consent_analysis !== true) {
+    return json({ error: 'Please agree to how your answers will be used.' }, 400);
   }
-
-  const photo = form.get('photo');
-  if (!photo || typeof photo === 'string' || photo.size === 0) {
-    return json({ error: 'Please add a photo.' }, 400);
+  if (!validAnswers(body.answers)) {
+    return json({ error: 'Some quiz answers were missing. Please retake the quiz.' }, 400);
   }
-  if (photo.size > MAX_PHOTO_BYTES) {
-    return json({ error: 'That photo is over 10 MB. Please choose a smaller one.' }, 400);
-  }
-  const photoType = (photo.type || '').toLowerCase();
-  if (!PHOTO_TYPES.includes(photoType)) {
-    return json({ error: 'Please upload a JPG, PNG, WebP or HEIC photo.' }, 400);
-  }
-
-  if (form.get('consent_analysis') !== 'yes') {
-    return json({ error: 'Please agree to how your photo and answers will be used.' }, 400);
-  }
-  const consentResearch = form.get('consent_research') === 'yes';
-
   const answers = {};
-  for (const [key, rule] of Object.entries(QUESTIONS)) {
-    const value = String(form.get(key) || '').trim();
-    if (!value) {
-      if (rule.required) return json({ error: 'Please answer every question marked as required.' }, 400);
-      continue;
-    }
-    if (rule.options && !rule.options.includes(value)) {
-      return json({ error: 'One of your answers was not recognized. Please check the form.' }, 400);
-    }
-    if (rule.maxLength && value.length > rule.maxLength) {
-      return json({ error: 'One of your written answers is too long.' }, 400);
-    }
-    answers[key] = value;
-  }
+  for (const key of QUIZ_KEYS) answers[key] = body.answers[key];
 
   const id = crypto.randomUUID();
-  const photoKey = `photos/${id}`;
-  await env.PHOTOS.put(photoKey, photo.stream(), { httpMetadata: { contentType: photoType } });
+  const season = pickSeason(answers);
+  await env.DB.prepare(
+    `INSERT INTO results (id, user_id, season, answers, consent_analysis, consent_research, privacy_policy_version, created_at)
+     VALUES (?, ?, ?, ?, 1, ?, ?, ?)`
+  ).bind(id, user.id, season, JSON.stringify(answers), body.consent_research === true ? 1 : 0,
+    PRIVACY_POLICY_VERSION, now()).run();
 
-  const timestamp = now();
-  try {
-    await env.DB.prepare(
-      `INSERT INTO submissions (id, user_id, photo_key, photo_type, answers, consent_analysis, consent_research,
-        privacy_policy_version, status, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, 1, ?, ?, 'received', ?, ?)`
-    ).bind(id, user.id, photoKey, photoType, JSON.stringify(answers), consentResearch ? 1 : 0,
-      PRIVACY_POLICY_VERSION, timestamp, timestamp).run();
-  } catch (err) {
-    await env.PHOTOS.delete(photoKey);
-    throw err;
-  }
-
-  return json({ ok: true, id }, 201);
-}
-
-async function submissionPhoto(request, env, id) {
-  const user = await currentUser(request, env);
-  if (!user) return json({ error: 'Not signed in.' }, 401);
-
-  const submission = await env.DB.prepare('SELECT user_id, photo_key FROM submissions WHERE id = ?').bind(id).first();
-  if (!submission || (submission.user_id !== user.id && user.role !== 'team')) {
-    return json({ error: 'Not found.' }, 404);
-  }
-  const object = await env.PHOTOS.get(submission.photo_key);
-  if (!object) return json({ error: 'Not found.' }, 404);
-
-  return new Response(object.body, {
-    headers: {
-      'Content-Type': object.httpMetadata?.contentType || 'application/octet-stream',
-      'Cache-Control': 'private, no-store',
-      'X-Content-Type-Options': 'nosniff',
-    },
-  });
+  return json({ ok: true, id, season }, 201);
 }
 
 // ---------- Sessions ----------
