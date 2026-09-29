@@ -356,3 +356,13 @@ The problem isn't the code: the API token Cloudflare uses for automatic builds h
 - *the AI now reports **lighting_type** (daylight / indoor / mixed / unsure). Indoor or mixed photos count for half, her answers count for more, and she sees "Your photo looks like it was taken in indoor light… retake it facing a window."*
 
 *Checked with the team's two exact AI replies: both now give **Bright Winter**, selfie-only and with honest answers, whether tagged indoor or daylight. All 108 possible readings give a season matching the undertone seen. The four example people's quiz seasons are unchanged. 24,192 answer combinations give clean wording. The server, selfie and build checks pass.]*
+
+**Team:**
+> push to main
+
+*[Pushed; the live build succeeded (the work-branch preview build failed as usual, with no effect on the site). Final palettes, question 7 and the photo fixes went live.]*
+
+**Team:**
+> remove the test page
+
+*[The agent deleted `photo-test.html`, `src/photo-test.js` and the `/api/photo-test` route, confirmed the address no longer runs the test, re-ran the real selfie-analysis tests and the build check (all pass), and pushed to main.]*

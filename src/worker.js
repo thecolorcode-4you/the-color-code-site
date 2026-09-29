@@ -12,7 +12,6 @@
 
 import { cleanAnswers, pickSeason, reasonFor, pickSeasonWithPhoto, reasonFromPhoto, goodLight } from '../season-rules.js';
 import { describePhoto, VISION_MODEL } from './photo-reading.js';
-import { photoTest } from './photo-test.js';
 
 var MAX_PHOTO_CHARS = 3000000; // about 2 MB of image; the app shrinks photos well below this
 
@@ -23,8 +22,6 @@ export default {
       if (request.method !== 'POST') return json({ error: 'Use POST' }, 405);
       return analyze(request, env);
     }
-    // TEMPORARY team test (selfie only) — remove with src/photo-test.js and photo-test.html.
-    if (url.pathname === '/api/photo-test' && request.method === 'POST') return photoTest(request, env);
     return env.ASSETS.fetch(request);
   },
 };
