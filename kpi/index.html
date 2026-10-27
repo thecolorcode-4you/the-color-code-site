@@ -49,6 +49,12 @@
   table.funnel-table th, table.funnel-table td { text-align: right; padding: 8px 6px; border-bottom: 1px solid var(--border); }
   table.funnel-table th:first-child, table.funnel-table td:first-child { text-align: left; }
   table.funnel-table th { color: var(--text-muted); font-weight: 600; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.04em; }
+  section.not-defined { margin-top: 28px; }
+  section.not-defined h2 { font-size: 21px; margin-bottom: 4px; }
+  .not-defined-intro { font-size: 12.5px; color: var(--text-muted); margin-bottom: 10px; }
+  .not-defined-list { list-style: none; margin: 0; padding: 0; }
+  .not-defined-list li { padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13.5px; }
+  .not-defined-list strong { display: block; font-size: 14.5px; margin-bottom: 2px; }
   footer.page-foot { margin-top: 36px; font-size: 12px; color: var(--text-muted); text-align: center; }
   @media (max-width: 420px) { .value { font-size: 30px; } h1 { font-size: 26px; } }
 </style>
@@ -56,7 +62,7 @@
 <body>
 <div class="wrap">
   <header class="top">
-    <p class="eyebrow">The Color Code — internal</p>
+    <p class="eyebrow" data-venture-line>The Color Code — internal</p>
     <h1>KPI Dashboard</h1>
     <p class="last-updated" data-last-updated>Loading…</p>
     <div class="update-note" data-update-note></div>
@@ -64,7 +70,13 @@
 
   <main data-kpi-cards></main>
 
-  <section class="funnel">
+  <section class="not-defined" data-not-defined-section hidden>
+    <h2>Not yet defined</h2>
+    <p class="not-defined-intro">These topics don't have a finished KPI yet, so they're not in the numbers above — shown here instead of inventing a target or a value.</p>
+    <ul class="not-defined-list" data-not-defined-list></ul>
+  </section>
+
+  <section class="funnel" data-funnel-section hidden>
     <h2>Funnel by source</h2>
     <p class="funnel-source-line" data-funnel-source></p>
     <table class="funnel-table">
@@ -73,17 +85,21 @@
       </thead>
       <tbody data-funnel-rows></tbody>
     </table>
+    <p class="funnel-source-line" data-funnel-note style="margin-top:8px;"></p>
   </section>
 
   <footer class="page-foot">
-    Internal dashboard — not indexed, not linked from the public site. Counts only, never names or emails.
+    Internal dashboard — not indexed, not linked from the public site. Counts only, never names or emails.<br>
+    kpi-data.json follows the course's required format exactly; kpi-internal.json carries everything extra we track for ourselves.
   </footer>
 </div>
 
 <script>
-var STAGE_LABEL = {
-  awareness: 'Awareness', interest: 'Interest', purchase_intention: 'Purchase intention', retention: 'Retention'
-};
+// This page reads two files: kpi-data.json (the course's required format —
+// venture/team/section/updated/goal/note/kpis[{name,stage,source,unit,target,
+// target_date,decision,series}]) and kpi-internal.json (our own extras: topics
+// not yet defined, and the funnel-by-source table). Never invent a field the
+// first file doesn't have — add to the second file instead.
 
 function esc(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
@@ -95,8 +111,8 @@ function fmtNum(n) {
   return typeof n === 'number' ? n.toLocaleString() : n;
 }
 
-function sparkline(history) {
-  var pts = history.filter(function (h) { return typeof h.value === 'number'; });
+function sparkline(series) {
+  var pts = series.filter(function (s) { return typeof s.value === 'number'; });
   if (pts.length < 2) return '<p class="source-line">Not enough days of data yet for a chart.</p>';
   var vals = pts.map(function (p) { return p.value; });
   var min = Math.min.apply(null, vals), max = Math.max.apply(null, vals);
@@ -112,12 +128,12 @@ function sparkline(history) {
 }
 
 function onTrackBadge(kpi) {
-  if (!kpi.defined) return '<span class="badge unknown">Not yet defined</span>';
-  var last = kpi.history.filter(function (h) { return typeof h.value === 'number'; }).slice(-1)[0];
+  var pts = (kpi.series || []).filter(function (s) { return typeof s.value === 'number'; });
+  var last = pts.slice(-1)[0];
   if (!last) return '<span class="badge unknown">No data yet</span>';
   if (kpi.target == null || !kpi.target_date) return '<span class="badge unknown">No target set</span>';
   var today = new Date(), target = new Date(kpi.target_date + 'T00:00:00');
-  var start = new Date('2026-10-22T00:00:00'); // when this KPI's target was set
+  var start = new Date(pts[0].date + 'T00:00:00'); // first real reading, not a guessed start date
   var totalDays = Math.max(1, (target - start) / 86400000);
   var elapsedDays = Math.max(0, (today - start) / 86400000);
   var expectedShare = Math.min(1, elapsedDays / totalDays);
@@ -128,45 +144,64 @@ function onTrackBadge(kpi) {
 }
 
 function changeLine(kpi) {
-  var pts = kpi.history.filter(function (h) { return typeof h.value === 'number'; });
-  if (pts.length < 2) return pts.length === 1 ? 'First reading — no prior value to compare yet.' : '';
+  var pts = (kpi.series || []).filter(function (s) { return typeof s.value === 'number'; });
+  if (pts.length < 2) return pts.length === 1 ? 'First reading — no prior value to compare yet.' : 'No readings yet.';
   var delta = pts[pts.length - 1].value - pts[pts.length - 2].value;
   var sign = delta > 0 ? '+' : '';
   return 'Change since last update: ' + sign + fmtNum(delta);
 }
 
 function renderCard(kpi) {
-  var last = kpi.history.filter(function (h) { return typeof h.value === 'number'; }).slice(-1)[0];
+  var pts = (kpi.series || []).filter(function (s) { return typeof s.value === 'number'; });
+  var last = pts.slice(-1)[0];
   var valueHtml = last
-    ? '<span class="value">' + fmtNum(last.value) + '</span>'
-    : '<span class="value muted">' + (kpi.defined ? 'No data yet' : 'Not yet defined') + '</span>';
-  var targetHtml = (kpi.defined && kpi.target != null && kpi.target_date)
+    ? '<span class="value">' + fmtNum(last.value) + (kpi.unit ? ' <span class="value muted" style="font-size:16px;">' + esc(kpi.unit) + '</span>' : '') + '</span>'
+    : '<span class="value muted">No data yet</span>';
+  var targetHtml = (kpi.target != null && kpi.target_date)
     ? '<span class="target-line">Target: ' + fmtNum(kpi.target) + ' by ' + kpi.target_date + '</span>'
-    : '<span class="target-line">' + (kpi.defined ? 'Target not yet set' : '') + '</span>';
+    : '<span class="target-line">Target not yet set</span>';
   return '' +
-    '<article class="card" id="kpi-' + kpi.id + '">' +
-      '<div class="card-top"><div><p class="stage-tag">' + (STAGE_LABEL[kpi.stage] || kpi.stage) + '</p>' +
+    '<article class="card">' +
+      '<div class="card-top"><div><p class="stage-tag">' + esc(kpi.stage || '') + '</p>' +
       '<h2>' + esc(kpi.name) + '</h2></div>' + onTrackBadge(kpi) + '</div>' +
       '<div class="value-row">' + valueHtml + targetHtml + '</div>' +
       '<p class="change-line">' + changeLine(kpi) + '</p>' +
-      (kpi.history && kpi.history.length ? sparkline(kpi.history) : '') +
+      sparkline(kpi.series || []) +
       (kpi.decision ? '<div class="decision"><strong>Decision this drives</strong>' + esc(kpi.decision) + '</div>' : '') +
       (kpi.source ? '<p class="source-line"><strong>Source:</strong> ' + esc(kpi.source) + '</p>' : '') +
-      (kpi.status_note ? '<p class="status-note">' + esc(kpi.status_note) + '</p>' : '') +
     '</article>';
 }
 
-fetch('kpi-data.json', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (data) {
-  document.querySelector('[data-last-updated]').textContent = 'Last updated: ' + data.last_updated;
-  document.querySelector('[data-update-note]').textContent = data.update_note;
+Promise.all([
+  fetch('kpi-data.json', { cache: 'no-store' }).then(function (r) { return r.json(); }),
+  fetch('kpi-internal.json', { cache: 'no-store' }).then(function (r) { return r.json(); }).catch(function () { return null; })
+]).then(function (results) {
+  var data = results[0], internal = results[1];
+
+  document.querySelector('[data-venture-line]').textContent = data.venture +
+    (data.team ? ' — ' + data.team : '') + (data.section ? ' — Section ' + data.section : '');
+  document.querySelector('[data-last-updated]').textContent = 'Last updated: ' + data.updated;
+  document.querySelector('[data-update-note]').textContent = data.note;
   document.querySelector('[data-kpi-cards]').innerHTML = data.kpis.map(renderCard).join('');
 
-  document.querySelector('[data-funnel-source]').textContent = 'Source: ' + data.funnel_by_source.source;
-  document.querySelector('[data-funnel-rows]').innerHTML = data.funnel_by_source.rows.map(function (r) {
-    return '<tr><td>' + esc(r.source) + '</td><td>' + fmtNum(r.visitors) + '</td><td>' + fmtNum(r.sign_ups) + '</td><td>' + fmtNum(r.active_this_week) + '</td><td>' + fmtNum(r.active_4wk_later) + '</td></tr>';
-  }).join('');
+  if (internal && internal.not_yet_defined && internal.not_yet_defined.length) {
+    document.querySelector('[data-not-defined-section]').hidden = false;
+    document.querySelector('[data-not-defined-list]').innerHTML = internal.not_yet_defined.map(function (t) {
+      return '<li><strong>' + esc(t.name) + '</strong>' + esc(t.note) + '</li>';
+    }).join('');
+  }
+
+  if (internal && internal.funnel_by_source) {
+    var f = internal.funnel_by_source;
+    document.querySelector('[data-funnel-section]').hidden = false;
+    document.querySelector('[data-funnel-source]').textContent = 'Source: ' + f.source + ' (run ' + f.updated + ')';
+    document.querySelector('[data-funnel-rows]').innerHTML = f.rows.map(function (r) {
+      return '<tr><td>' + esc(r.source) + '</td><td>' + fmtNum(r.visitors) + '</td><td>' + fmtNum(r.sign_ups) + '</td><td>' + fmtNum(r.active_this_week) + '</td><td>' + fmtNum(r.active_4wk_later) + '</td></tr>';
+    }).join('');
+    document.querySelector('[data-funnel-note]').textContent = f.note || '';
+  }
 }).catch(function (e) {
-  document.querySelector('[data-kpi-cards]').innerHTML = '<p>Could not load kpi-data.json: ' + esc(e.message) + '</p>';
+  document.querySelector('[data-kpi-cards]').innerHTML = '<p>Could not load dashboard data: ' + esc(e.message) + '</p>';
 });
 </script>
 </body>

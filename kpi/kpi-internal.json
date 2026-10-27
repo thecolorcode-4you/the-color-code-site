@@ -1,0 +1,20 @@
+{
+  "_what_this_is": "Supplementary data for our OWN dashboard view only — not part of the course's kpi-data.json feed, so adding fields here never risks breaking the professor's reader. kpi-data.json stays in the exact required format; this file carries everything extra we still want to see.",
+  "not_yet_defined": [
+    { "name": "Interest", "note": "Candidates discussed (click-through rate from bio taps, or average time on site) but never locked in — see KPI-PLAN.md." },
+    { "name": "Visits to website per month", "note": "One real reading exists (Cloudflare Web Analytics, mostly QA test traffic) but no target has been agreed yet." },
+    { "name": "Purchase intention", "note": "Topic chosen 2026-10-22, never walked through the definition conversation." },
+    { "name": "Services on website used", "note": "The product only offers the one-time analysis today — nothing to count yet beyond intake_completed." },
+    { "name": "Retention", "note": "One real reading exists (0 of 1 signed-up user active later — too soon to mean anything) but no target has been agreed yet." }
+  ],
+  "funnel_by_source": {
+    "source": "ceo/analytics/QUERIES.md query 6, run against the live tracker + auth.users",
+    "updated": "2026-10-27",
+    "columns": ["source", "visitors", "sign_ups", "active_this_week", "active_4wk_later"],
+    "rows": [
+      { "source": "instagram", "visitors": 1, "sign_ups": 1, "active_this_week": 1, "active_4wk_later": 0 },
+      { "source": "direct", "visitors": 1, "sign_ups": 0, "active_this_week": 0, "active_4wk_later": 0 }
+    ],
+    "note": "This is today's QA test traffic, not real visitors — the site isn't publicly launched yet."
+  }
+}
