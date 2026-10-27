@@ -1,0 +1,91 @@
+{
+  "_format_note": "PROVISIONAL. Not yet matched to Practicum 7 step 7's exact format on the course website — nobody has given the analytics agent that spec. Once you paste it in, this file's shape will be rebuilt to match exactly. Until then this is the agent's own best-guess structure, documented so it's easy to reshape.",
+  "last_updated": "2026-10-27",
+  "update_note": "No numbers moved yet — this is the dashboard's first day. Today we deployed the tracker, connected the live Supabase project, and ran the first end-to-end test (one test sign-up, one quiz completion). Nothing below is real customer activity yet. Starting tomorrow, the daily rota in KPI-PLAN.md begins collecting real numbers, and this note will start saying what actually moved.",
+  "kpis": [
+    {
+      "id": "awareness",
+      "stage": "awareness",
+      "name": "Awareness — reach",
+      "defined": true,
+      "unit": "accounts reached (Instagram + TikTok combined)",
+      "target": 1282,
+      "target_date": "2026-12-04",
+      "decision": "If behind pace, Joely/Sofia escalate direct Panhellenic/outreach-node contact instead of waiting on organic social. If reach climbs but Interest numbers don't move with it, reach isn't the bottleneck and we stop over-investing in it.",
+      "source": "Instagram Insights → Accounts reached + TikTok Analytics → Reach, cumulative since launch. Files: ceo/analytics/data/YYYY-MM-DD-instagram.png, YYYY-MM-DD-tiktok.png. See KPI-PLAN.md's Source line on this KPI for the exact read steps and failure modes.",
+      "status": "no_data_yet",
+      "status_note": "Nobody has run the daily collection yet — it starts with the rota in KPI-PLAN.md. Also still open: TikTok isn't confirmed switched to a Pro/Business account, which Analytics needs to show real numbers.",
+      "history": [
+        { "date": "2026-10-27", "value": null }
+      ]
+    },
+    {
+      "id": "interest",
+      "stage": "interest",
+      "name": "Interest",
+      "defined": false,
+      "status": "not_yet_defined",
+      "status_note": "Candidates discussed (click-through rate from bio taps, or average time on site) but never locked in — see KPI-PLAN.md, ‘Currently on: Interest.’ No target, no source wired until that's finished.",
+      "history": []
+    },
+    {
+      "id": "visits-per-month",
+      "stage": "interest",
+      "name": "Visits to website per month",
+      "defined": false,
+      "unit": "visits (Cloudflare Web Analytics)",
+      "target": null,
+      "target_date": null,
+      "decision": "Not yet agreed with Whitney — a real number exists below, but no target/date has been set, so there's nothing to call on-track or behind against yet.",
+      "source": "Cloudflare Web Analytics → Visits (last 24 hrs), account overview. File: ceo/analytics/data/YYYY-MM-DD-cloudflare.png.",
+      "status": "reading_no_target",
+      "status_note": "This one real reading is almost entirely the agent's own QA testing today, not real visitors — the site isn't publicly launched yet (link still withheld from bios pending legal/consent review). Treat it as a test of the pipe, not a real Visits number.",
+      "history": [
+        { "date": "2026-10-27", "value": 25, "note": "25 page views / 16 visits in the last 24 hrs, almost entirely QA testing — see status_note" }
+      ]
+    },
+    {
+      "id": "purchase-intention",
+      "stage": "purchase_intention",
+      "name": "Purchase intention",
+      "defined": false,
+      "status": "not_yet_defined",
+      "status_note": "Topic chosen by Whitney 2026-10-22, never walked through the KPI-definition conversation (what's counted / decision / target / date). A real candidate action exists in the tracker already (e.g. intake_started, or reaching the account-creation gate) — just not formally agreed as the KPI.",
+      "history": []
+    },
+    {
+      "id": "services-used",
+      "stage": "retention",
+      "name": "Services on website used",
+      "defined": false,
+      "status": "not_yet_defined",
+      "status_note": "Topic chosen by Whitney 2026-10-22, never defined. The product itself only offers the one-time color analysis today — the 'personalized stylist for other fashion aspects' goal this KPI implies isn't built yet, so there may be nothing to count beyond intake_completed until that ships.",
+      "history": []
+    },
+    {
+      "id": "retention",
+      "stage": "retention",
+      "name": "Retention",
+      "defined": false,
+      "unit": "users still active N weeks after sign-up",
+      "target": null,
+      "target_date": null,
+      "decision": "Not yet agreed with Whitney — no target to call on-track or behind against.",
+      "source": "ceo/analytics/QUERIES.md query 5 (1-week/4-week retention by sign-up cohort), run against the tracker's events table.",
+      "status": "reading_no_target",
+      "status_note": "Only one real sign-up exists (the test account from today), so this reading is not meaningful yet — it's 0/0 because not enough time has passed, not because of churn.",
+      "history": [
+        { "date": "2026-10-27", "value": 0, "note": "0 of 1 signed-up user active 1 week later, 0 of 1 active 4 weeks later — too soon to mean anything, see status_note" }
+      ]
+    }
+  ],
+  "funnel_by_source": {
+    "source": "ceo/analytics/QUERIES.md query 6, run 2026-10-27 against the live tracker + auth.users",
+    "columns": ["source", "visitors", "sign_ups", "active_this_week", "active_4wk_later"],
+    "rows": [
+      { "source": "instagram", "visitors": 1, "sign_ups": 1, "active_this_week": 1, "active_4wk_later": 0 },
+      { "source": "direct", "visitors": 1, "sign_ups": 0, "active_this_week": 0, "active_4wk_later": 0 }
+    ],
+    "note": "This is today's QA test traffic, not real visitors — see each KPI's status_note above."
+  }
+}
