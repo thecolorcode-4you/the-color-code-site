@@ -82,19 +82,22 @@ function propagateTag() {
   });
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-  window.trackEvent('page_view');
-  propagateTag();
+// No DOMContentLoaded listener here on purpose: supabase-client.js does a
+// top-level `await import(...)` of the Supabase SDK from a CDN, which delays
+// this whole module until that resolves — often after DOMContentLoaded has
+// already fired, so a listener for it would never run. Module scripts only
+// ever execute after the DOM is parsed anyway, so we don't need the event.
+window.trackEvent('page_view');
+propagateTag();
 
-  // Reviews open after the pilot (customer-reviews.html); this records interest
-  // and confirms receipt until feedback-learning wires the real submit.
-  var reviewForm = document.querySelector('[data-review-form]');
-  if (reviewForm) {
-    reviewForm.addEventListener('submit', function (e) {
-      e.preventDefault();
-      window.trackEvent('review_submitted');
-      var note = reviewForm.querySelector('[data-preview-note]');
-      if (note) note.hidden = false;
-    });
-  }
-});
+// Reviews open after the pilot (customer-reviews.html); this records interest
+// and confirms receipt until feedback-learning wires the real submit.
+var reviewForm = document.querySelector('[data-review-form]');
+if (reviewForm) {
+  reviewForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    window.trackEvent('review_submitted');
+    var note = reviewForm.querySelector('[data-preview-note]');
+    if (note) note.hidden = false;
+  });
+}
