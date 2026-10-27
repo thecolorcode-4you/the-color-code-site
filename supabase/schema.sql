@@ -67,6 +67,53 @@ grant select, insert, update, delete on public.analyses to authenticated;
 grant select on public.team_members to authenticated;
 grant execute on function public.is_team() to authenticated;
 
+-- How visitors and signed-in users use the site and app: one row per page view
+-- or key action. Anyone can add a row; no one can read, change or remove any
+-- row — including their own — through the public API. These are read only from
+-- the Supabase SQL editor, per ceo/analytics/QUERIES.md.
+create table if not exists public.events (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  visitor_id text not null,
+  user_id uuid references auth.users(id) on delete set null,
+  event text not null,
+  page text,
+  source text,
+  utm_source text,
+  utm_medium text,
+  utm_campaign text,
+  device text
+);
+
+create index if not exists events_created_at_idx on public.events (created_at);
+create index if not exists events_event_idx on public.events (event);
+create index if not exists events_user_id_idx on public.events (user_id);
+create index if not exists events_visitor_id_idx on public.events (visitor_id);
+
+alter table public.events enable row level security;
+
+-- A signed-in visitor's events are always attributed to them, never to whatever
+-- user_id their browser happens to send — same pattern as set_analysis_owner above.
+create or replace function public.set_event_user() returns trigger
+language plpgsql security definer set search_path = public
+as $$
+begin
+  new.user_id := auth.uid();
+  return new;
+end $$;
+
+drop trigger if exists events_owner on public.events;
+create trigger events_owner before insert on public.events
+for each row execute function public.set_event_user();
+
+drop policy if exists "anyone can record their own usage" on public.events;
+create policy "anyone can record their own usage" on public.events
+  for insert to anon, authenticated with check (true);
+
+grant insert on public.events to anon, authenticated;
+-- Deliberately no select/update/delete grants or policies here: a browser can
+-- add rows but can never read, change, or remove any row, including its own.
+
 -- AFTER all five of you have created accounts on the site, run this once
 -- with your real emails to make yourselves the team:
 -- insert into public.team_members (user_id)

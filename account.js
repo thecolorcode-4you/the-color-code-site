@@ -1,5 +1,6 @@
 // The Color Code — sign up, log in, forgot password, reset password, and "My palettes".
 import { accountsOn, supabase, currentUser, isTeam, esc } from './supabase-client.js';
+import { visitorId, firstTag } from './track.js';
 
 var root = document.querySelector('[data-account]');
 var resetRoot = document.querySelector('[data-reset]');
@@ -47,13 +48,22 @@ function authForms(mode) {
     var email = f.email.value.trim();
     var res;
     if (mode === 'signup') {
-      res = await supabase.auth.signUp({ email: email, password: f.password.value, options: { emailRedirectTo: base + next } });
+      var tag = firstTag();
+      res = await supabase.auth.signUp({
+        email: email, password: f.password.value,
+        options: {
+          emailRedirectTo: base + next,
+          data: { visitor_id: visitorId(), utm_source: tag.utm_source, utm_medium: tag.utm_medium, utm_campaign: tag.utm_campaign },
+        },
+      });
+      if (!res.error) window.trackEvent('sign_up');
       if (!res.error && !res.data.session) {
         msg(out, 'Almost done — we sent a confirmation link to <strong>' + esc(email) + '</strong>. Open it on this phone to finish creating your account.');
         b.disabled = false; return;
       }
     } else if (mode === 'login') {
       res = await supabase.auth.signInWithPassword({ email: email, password: f.password.value });
+      if (!res.error) window.trackEvent('sign_in');
     } else {
       res = await supabase.auth.resetPasswordForEmail(email, { redirectTo: base + 'reset-password.html' });
       if (!res.error) { msg(out, 'If there\'s an account for <strong>' + esc(email) + '</strong>, a reset link is on its way. Check your inbox (and spam).'); b.disabled = false; return; }
