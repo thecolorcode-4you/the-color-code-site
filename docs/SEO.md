@@ -116,7 +116,7 @@ Tell me which ones you've done and I'll mark them here.
 
 | Home page, mobile | Before | After |
 |---|---|---|
-| **Performance** | **98** (98, 98, 99) | **99** (100, 99, 99) |
+| **Performance** | **98** (98, 98, 99) | **99** (100, 99, 99); **official PageSpeed Insights on the live site: 100** |
 | Accessibility | 95 | 100 |
 | Best practices | 96 | 96 |
 | **SEO** | **66** | **100** |
@@ -128,7 +128,7 @@ Tell me which ones you've done and I'll mark them here.
 
 All 10 public pages now score SEO 100 and accessibility 98–100 in the same test.
 
-**Please record the real PageSpeed Insights score** (it measures through Cloudflare, which my local test can't): open https://pagespeed.web.dev/, paste the home page address, choose **Mobile**, and write the number here: `Mobile performance on live site after deploy: ____ (date ____)`. It may be a few points lower than mine because of real network latency; the fixes are the same.
+**Please record the real PageSpeed Insights score** (it measures through Cloudflare, which my local test can't): open https://pagespeed.web.dev/, paste the home page address, choose **Mobile**, and write the number here: `Mobile performance on live site after deploy: **100** (2026-11-12, run by the team on pagespeed.web.dev)`. It may be a few points lower than mine because of real network latency; the fixes are the same.
 
 ### What it flagged, and what I fixed
 
