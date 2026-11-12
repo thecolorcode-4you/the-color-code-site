@@ -1,0 +1,4 @@
+# Cloudflare static-asset response headers (read by Cloudflare, not served as a page).
+# Images and video rarely change, so phones can keep them for 30 days.
+/assets/*
+  Cache-Control: public, max-age=2592000

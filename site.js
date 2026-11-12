@@ -1,6 +1,20 @@
 // The Color Code — light JS only, per WEBSITE-BRAINSTORM.md Decision 12 (plain HTML/CSS + light JS).
 // Usage tracking lives in track.js now (our own Supabase events table, not a stub).
 
+// Home page video: load it only after the page has finished loading, so it never slows the
+// first view on a phone. The poster image shows until then.
+window.addEventListener('load', function () {
+  var vids = document.querySelectorAll('video[data-src]');
+  for (var i = 0; i < vids.length; i++) {
+    var v = vids[i];
+    v.src = v.getAttribute('data-src');
+    v.removeAttribute('data-src');
+    v.load();
+    var p = v.play();
+    if (p && p.catch) p.catch(function () {});
+  }
+});
+
 // Installable app: register the service worker and show an "Add to Home Screen" prompt.
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function () { navigator.serviceWorker.register('/sw.js').catch(function () {}); });
