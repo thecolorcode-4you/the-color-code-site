@@ -30,7 +30,7 @@ I can't sign in to Google for you. About 10 minutes:
 
 1. Go to https://search.google.com/search-console and sign in with the team Google account.
 2. Click **Add property** and choose **URL prefix** (not Domain: a `workers.dev` address is shared, so the Domain option won't work). Paste `https://the-color-code-site.thecolorcode-mktg4250.workers.dev/`.
-3. Choose the **HTML tag** verification method. Google shows a line like `<meta name="google-site-verification" content="abc123…">`. **Send me that line** (or paste it into the `<head>` of `index.html` yourself), push it to main, wait for the Cloudflare build to finish, then click **Verify**.
+3. ✅ **Done 2026-11-12:** verification tag added to `index.html`. Choose the **HTML tag** verification method. Google shows a line like `<meta name="google-site-verification" content="abc123…">`. **Send me that line** (or paste it into the `<head>` of `index.html` yourself), push it to main, wait for the Cloudflare build to finish, then click **Verify**.
 4. In the left menu, open **Sitemaps**, type `sitemap.xml`, and click **Submit**. The status should say "Success" within a day.
 5. Open **URL inspection**, paste the home page address, and click **Request indexing**. Do the same for the three guide pages.
 6. Optional, same idea for Bing (it also powers ChatGPT search): https://www.bing.com/webmasters → **Import from Google Search Console**. It copies the site and sitemap in one click.
