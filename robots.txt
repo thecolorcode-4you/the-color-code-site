@@ -1,4 +1,4 @@
-# The Color Code — search and AI-search crawlers are welcome on our public pages.
+# The Color Code - search and AI-search crawlers are welcome on our public pages.
 # (Replaces the pilot-era "Disallow: /" from WEBSITE-BRAINSTORM.md Decision 13, reversed Nov 2026.)
 # Private pages (account, result, reset password, team screen, KPI dashboard) stay out of search
 # with a noindex tag on each page, which crawlers can only read if they are allowed to fetch it.
