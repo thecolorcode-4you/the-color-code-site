@@ -180,3 +180,134 @@ Two things to improve later: Google prefers a square logo of at least 112×112 f
 New: `sitemap.xml`, `_headers`, `warm-or-cool-undertone.html`, `what-colors-look-good-on-me.html`, `color-analysis-new-orleans.html`, `assets/hero.mp4`, `assets/hero-poster.webp`, `assets/clothes-rack.webp`, `docs/SEO.md`.
 Changed: `robots.txt`, every `.html` page, `kpi/index.html` (title only), `styles.css`, `site.js`, `sw.js`, `assets/logo.png`.
 Removed: `assets/hero.mov`.
+
+---
+---
+
+# Part 2: Being found, trusted and recommended by AI assistants
+
+**Date:** 2026-11-14 · **By:** web agent
+
+The goal: when someone asks ChatGPT, Claude, Gemini or Perplexity something like "free color analysis near Tulane" or "is there a color analysis app that doesn't keep my photo", the assistant can find us, check us and recommend us. Assistants trust plain answers, numbers with sources, and other websites that mention us, so those are the three things this part adds.
+
+## 7. One FAQ page with the ten questions people ask an assistant
+
+I rebuilt `faq-and-policies.html` instead of adding a second FAQ page, so Google and the assistants don't see two pages competing with each other (CEO's choice). The ten questions sit at the top, each answered in two or three plain sentences:
+
+1. What is The Color Code? (what we do)
+2. Who is The Color Code for?
+3. How much does it cost?
+4. Where are you located?
+5. How do I start?
+6. How long does it take?
+7. What happens to my photo?
+8. Who does my analysis, and how is my season chosen?
+9. How does it compare with an in-person color analysis? (draping)
+10. How is it different from free online color quizzes?
+
+Below them come the numbers box (section 8) and the five earlier policy questions (chapter color night, tracking, redo, warm or cool, reviews). The page title is now "FAQ: What We Do, Cost and How to Start".
+
+**Everything is true as of 2026-11-14.** I checked each claim against the app's code and our docs: the account is required before the quiz, any email can sign up (not only Tulane addresses), the selfie is never stored, and prices after the pilot are undecided. The comparison answers describe draping and online quizzes in general terms ("usually by appointment and for a fee", "many online quizzes") and name no competitor, so there is nothing about another business we would have to prove.
+
+## 8. Numbers with their sources
+
+A "The Color Code in numbers" box is now on the **home page**, the new **Pricing page** and the **FAQ**. Every number names where it comes from:
+
+| Number | Source shown on the page |
+|---|---|
+| $0, including a chapter's first color night | Our pilot pricing, set by our team (links to Pricing) |
+| About 1 minute; a selfie adds about 15 seconds | Our app, beta tested in three rounds in September 2026 |
+| 12 seasons; 8 colors to wear, 3 to skip, 2 lip, 2 blush, 3 eye shades | Our palettes, finalized by Bella and Whitney in September 2026 |
+| 0 photos kept | How our app is built (links to the photo answer) |
+| Live since September 2026, built and run by 5 Tulane students | Our launch and beta tests, September 2026 (links to About Us) |
+
+**Two facts you asked for are missing on purpose:**
+- **How many customers.** The database only lets signed-in team members see results, so I can't count them, and you chose to leave the number out for now. When you have it, sign in to the Team screen (`team.html`), note the count and the date, and send me something like "31 completed analyses as of Dec 1, from our team screen". There's an empty slot for it in the code of all three pages.
+- **What a customer said.** We have no real quote with permission yet; the site's reviews are labeled invented examples, and I didn't present any of them as real. **To-do:** ask one or two real pilot customers for a sentence and written permission (name or initials, date, where they said it). There's an empty slot for that too. A real customer quote is probably the most convincing single thing we could add for assistants and for people.
+
+### New Pricing page
+`pricing.html` is linked in the top menu and footer of every page. It says, in its first paragraph, that everything is $0 during the Tulane pilot, then has two price cards (personal analysis $0; chapter color night $0 for your first, in exchange for a post and a tag, booked by Instagram DM), the numbers box, and "After the pilot: prices have not been decided."
+
+## 9. Structured data (JSON-LD)
+
+| Page | Markup | What's in it |
+|---|---|---|
+| Home | `Organization` | Name, description, location (New Orleans, LA, US), website, logo, Instagram and TikTok, contact (Instagram message) |
+| About | `Organization` (from Part 1) | Same, plus the five team names |
+| FAQ | `FAQPage` | All 15 questions and answers, word for word, linked to the organization |
+
+**Everything in the markup is visible on its page.** I checked this with a script that compares every text field in the markup against the page's visible text (no differences). To make the contact visible on every page, the footer now says "Contact: Instagram message to @thecolorcode.collective".
+
+Note: since 2023 Google shows FAQ rich results only for government and health sites, so ours won't get the drop-down in Google results. The markup is still valid, and assistants and other search engines read it.
+
+Check it after deploy: https://search.google.com/test/rich-results, then paste the home page and FAQ addresses.
+
+## 10. llms.txt
+
+`/llms.txt` is new: a short plain-text summary of what we are, who we serve, how to contact us, and links to the pages that matter (FAQ, Pricing, Start, How It Works, About, the three guides). Google has said it doesn't use this file and the other assistants don't promise to either, so it took 10 minutes and is not the plan. The plan is sections 7–9 and 11.
+
+## 11. Ten places assistants read where we could be mentioned (drafts only; nothing posted)
+
+Assistants recommend businesses that **other sites** talk about. The drafts are below, written to be true today. **I posted nothing.** Before posting, check each site's rules, and always say you're on the team.
+
+Site link to use: `https://the-color-code-site.thecolorcode-mktg4250.workers.dev/`
+
+### 1. Google Business Profile (Gemini, Google Maps, "near me" answers)
+**Check first:** Google only lists businesses that meet customers in person. Chapter color nights happen in person, so we can likely list as a **service-area business with the address hidden**. If Google says we don't qualify, skip it.
+- **Name:** The Color Code
+- **Category:** Image consultant (closest fit)
+- **Service area:** New Orleans, LA
+- **Description (750 characters max):** "The Color Code is a free personal color analysis that finds your color season, palette and makeup shades in about a minute. Five Tulane University students built it and run it. Take it on your phone: answer seven questions and add a selfie if you like (it's deleted as soon as your result is back). We also run chapter color nights for Tulane sororities; your chapter's first one is free during our pilot. Message us on Instagram @thecolorcode.collective."
+- **Website:** the site link · **Owner:** Whitney
+
+### 2. Yelp (ChatGPT, Bing and Apple Maps lean on it)
+Same rules as Google: list as a service-area business with no public address. Use the description above. **Don't ask customers for Yelp reviews**; Yelp penalizes businesses that do. · **Owner:** Sofia
+
+### 3. Reddit, r/Tulane (Perplexity and ChatGPT quote Reddit often)
+**Check first:** read the subreddit rules; many ban self-promotion. If unsure, message the moderators with the post and ask. Post from a personal account and say you're on the team.
+- **Title:** "We're Tulane students who built a free color analysis app. Looking for honest feedback"
+- **Body:** "Hi! Five of us built The Color Code as a class venture: you answer seven questions (plus an optional selfie, deleted right after) and get your color season, a palette and makeup shades in about a minute. It's free during our pilot. We'd love honest feedback, especially from anyone whose result felt wrong, since that's how we improve the rules. [site link] (Disclosure: I'm on the team.)"
+- **Owner:** Piper
+
+### 4. Reddit, r/coloranalysis (the main color-analysis community)
+**Check first:** this community is strict about self-promotion; ask the moderators before posting anything with a link. A better route than posting is answering existing undertone questions helpfully and linking our undertone guide only where it truly answers the question, with a disclosure.
+- **Sample reply:** "One thing that helped us: no single sign is reliable, so we weigh four (veins, gold vs silver, white vs ivory, how you tan) and treat hair as only a light hint. We wrote it up here: [undertone guide link]. (I'm on the team that made this free quiz.)"
+- **Owner:** Bella
+
+### 5. YouTube (Gemini and Google's AI answers read video titles and descriptions)
+If we post our TikToks as YouTube Shorts:
+- **Channel About:** "The Color Code: free personal color analysis by five Tulane students in New Orleans. Find your season, palette and makeup shades in about a minute. [site link]"
+- **Video description template:** "[One line about this video.] Find your own color season free in about a minute: [site link]. Warm or cool? [undertone guide link]. Made by Tulane students in New Orleans. #coloranalysis #colorseason"
+- **Owner:** Joely
+
+### 6. Local directories: Bing Places and Apple Business Connect (ChatGPT search uses Bing; Siri uses Apple)
+Bing Places can import the Google Business Profile in one click once it exists. Apple Business Connect: same name, description and website, service area New Orleans. · **Owner:** Whitney
+
+### 7. The Tulane Hullabaloo (student newspaper: the "student press page")
+**Pitch email to the news or features editor:**
+> Subject: Tulane students built a free color analysis app for Greek life
+>
+> Hi [name], we're five Tulane students (Whitney, Bella, Piper, Joely and Sofia) who built The Color Code, a free personal color analysis that gives you your color season, palette and makeup shades in about a minute on your phone. It's in a free pilot at Tulane since September 2026, and we run free "color nights" for sorority chapters. A few things readers may find interesting: the selfie is optional and deleted right after, and our season rules weigh seven answers instead of the usual one-question quiz. We'd be glad to talk or demo it on a phone. [site link] · Instagram @thecolorcode.collective
+- **Owner:** Joely
+
+### 8. Tulane Panhellenic (our partner: website, newsletter, council GroupMe)
+**Ask:** a line plus a link on their website's resources or events page, or in the newsletter.
+- **Suggested blurb for them:** "The Color Code, built by Tulane students, offers a free personal color analysis on your phone in about a minute. Chapters can book a free color night during the pilot: message @thecolorcode.collective on Instagram. [site link]"
+- **Owners:** Joely and Sofia (they work with Panhellenic)
+
+### 9. Tulane student-venture and organization pages (Lepage Center for Entrepreneurship, student organization directory, our course page)
+**Ask:** a listing with our one-line description and site link wherever Tulane lists student ventures (for example, the Lepage Center at Freeman, or the course's venture showcase on mktg4250.pages.dev). University pages carry a lot of trust with assistants.
+- **One-liner:** "The Color Code: free personal color analysis for Tulane students. Find your season, palette and makeup shades in about a minute. [site link]"
+- **Owner:** Whitney
+
+### 10. LinkedIn (company page, plus each team member's profile)
+- **Company page About:** the Google description from #1.
+- **Each of us:** add "The Color Code" under Projects or Experience, with the one-liner and the site link.
+- **Owner:** everyone
+
+**Tell me which of these you've done**, and I'll mark them here. Ask an assistant again in 4–6 weeks (for example "free color analysis Tulane" in ChatGPT, Perplexity and Gemini) and note whether we come up. That's the simplest way to see if this is working.
+
+## Files changed in Part 2
+
+New: `pricing.html`, `llms.txt`.
+Changed: `faq-and-policies.html` (rebuilt), `index.html` (numbers box, Organization JSON-LD), every page's top menu and footer (Pricing link; Instagram contact in the footer line), `sitemap.xml` (Pricing added; 11 pages), `styles.css`, `sw.js` (cache `tcc-v10`, `styles.css?v=5`), `docs/SEO.md`.

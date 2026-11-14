@@ -1,0 +1,26 @@
+# The Color Code
+
+> The Color Code is a free personal color analysis that finds your color season, palette and makeup shades in about a minute. Five Tulane University students in New Orleans, Louisiana built it and run it. It is free during our Tulane pilot, which has been live since September 2026.
+
+We serve Tulane students, especially sorority members choosing colors for formals, bid day and photos, and chapters that want a sisterhood "color night". Anyone can take it online. You answer seven questions and can add an optional selfie, which is deleted as soon as your result is back. Fixed season rules place you in one of twelve seasons; each palette has 8 colors to wear, 3 to skip, and lip, blush and eye shades. We do not do in-person fabric draping.
+
+Contact: Instagram direct message, @thecolorcode.collective (https://www.instagram.com/thecolorcode.collective/).
+
+## Main pages
+
+- [FAQ](https://the-color-code-site.thecolorcode-mktg4250.workers.dev/faq-and-policies.html): what we do, who it is for, cost, location, how to start, and how we compare with draping and online quizzes
+- [Pricing](https://the-color-code-site.thecolorcode-mktg4250.workers.dev/pricing.html): $0 during the Tulane pilot, including a chapter's first color night
+- [Start your analysis](https://the-color-code-site.thecolorcode-mktg4250.workers.dev/start-your-analysis.html): the quiz itself
+- [How it works](https://the-color-code-site.thecolorcode-mktg4250.workers.dev/how-it-works.html): how a season is chosen
+- [About us](https://the-color-code-site.thecolorcode-mktg4250.workers.dev/about.html): the team, where we are, how to reach us
+
+## Guides
+
+- [Warm or cool undertone?](https://the-color-code-site.thecolorcode-mktg4250.workers.dev/warm-or-cool-undertone.html): the four signs and how our quiz weighs each
+- [What colors look good on me?](https://the-color-code-site.thecolorcode-mktg4250.workers.dev/what-colors-look-good-on-me.html): all twelve season palettes
+- [Color analysis in New Orleans](https://the-color-code-site.thecolorcode-mktg4250.workers.dev/color-analysis-new-orleans.html): free, on your phone, or as a chapter color night
+
+## Optional
+
+- [Results and chapter color nights](https://the-color-code-site.thecolorcode-mktg4250.workers.dev/results-and-benefits.html)
+- [Customer reviews](https://the-color-code-site.thecolorcode-mktg4250.workers.dev/customer-reviews.html): no real reviews yet; examples are labeled as invented
