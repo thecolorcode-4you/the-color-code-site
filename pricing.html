@@ -22,7 +22,7 @@
 <meta name="apple-mobile-web-app-title" content="Color Code">
 <link rel="apple-touch-icon" href="assets/icon-180.png">
 <link rel="icon" type="image/png" href="assets/icon-192.png">
-<link rel="stylesheet" href="styles.css?v=5">
+<link rel="stylesheet" href="styles.css?v=6">
 </head>
 <body>
 <div class="banner">Tulane pilot — free during launch.</div>
@@ -86,6 +86,31 @@
       <!-- CUSTOMER QUOTE: add a real quote here only with the customer's written permission (name or initials, date, where they said it). None yet as of 2026-11-14. -->
     </section>
 
+    <section class="signup" id="email-list">
+      <p class="eyebrow">Email list</p>
+      <h2 class="section-title">Get color tips from us by email</h2>
+      <p class="lede">For anyone who wants color ideas for their season and news about chapter color nights. Leave your name and email.</p>
+      <form class="form-block signup-form" data-email-signup>
+        <div class="field">
+          <label for="signup-name">Your name</label>
+          <input type="text" id="signup-name" name="name" autocomplete="name" maxlength="100" required>
+        </div>
+        <div class="field">
+          <label for="signup-email">Your email</label>
+          <input type="email" id="signup-email" name="email" autocomplete="email" maxlength="254" required>
+        </div>
+        <div class="checkbox-field">
+          <input type="checkbox" id="signup-consent" name="consent" required>
+          <label for="signup-consent">I agree to receive emails from The Color Code. I can unsubscribe at any time.</label>
+        </div>
+        <div>
+          <button class="btn-primary" type="submit">Join our email list</button>
+        </div>
+        <p class="form-note">To unsubscribe, use the link in any of our emails or message us on Instagram at @thecolorcode.collective. We use your email only to send you these emails.</p>
+        <p class="signup-status" data-signup-status role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
   </div>
 </main>
 
@@ -120,6 +145,7 @@
 
 <script src="site.js"></script>
 <script type="module" src="track.js"></script>
+<script type="module" src="email-signup.js"></script>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "827ff2dbd9e24afdabd2102d068543dd"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>

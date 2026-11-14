@@ -48,6 +48,21 @@ export function firstTag() {
   return { utm_source: null, utm_medium: null, utm_campaign: null };
 }
 
+// The first other website that sent this visitor here (for example l.instagram.com),
+// kept like the first link tag, so a later sign-up still knows where they came from.
+var REF_KEY = 'tcc_first_ref';
+export function firstReferrer() {
+  var host = null;
+  try { host = document.referrer ? new URL(document.referrer).hostname : null; } catch (e) {}
+  if (host === location.hostname) host = null;
+  try {
+    var stored = localStorage.getItem(REF_KEY);
+    if (stored) return stored;
+    if (host) localStorage.setItem(REF_KEY, host);
+  } catch (e) {}
+  return host;
+}
+
 function device() {
   return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ? 'phone' : 'computer';
 }
@@ -87,6 +102,7 @@ function propagateTag() {
 // this whole module until that resolves — often after DOMContentLoaded has
 // already fired, so a listener for it would never run. Module scripts only
 // ever execute after the DOM is parsed anyway, so we don't need the event.
+firstReferrer();
 window.trackEvent('page_view');
 propagateTag();
 

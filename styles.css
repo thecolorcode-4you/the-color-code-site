@@ -330,3 +330,11 @@ h2.section-title { line-height: 1.15; }
 .fact-grid .src { display: block; margin-top: 10px; font-size: 12.5px; color: var(--text-muted); }
 .fact-grid .src a { color: var(--accent-deep); }
 .price { font-family: 'Instrument Serif', Georgia, serif; font-size: 34px; color: var(--accent-deep); margin-top: 6px; }
+
+/* Email list sign-up (CRM, Nov 2026) */
+.signup-form { max-width: 520px; }
+.signup-form .checkbox-field { color: var(--text); font-size: 14.5px; }
+.signup-form .checkbox-field input { width: 18px; height: 18px; flex: none; }
+.signup-status { font-size: 14px; min-height: 1.4em; }
+.signup-status.ok { color: #2F6B3A; font-weight: 600; }
+.signup-status.err { color: #A3352B; font-weight: 600; }
