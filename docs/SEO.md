@@ -2,9 +2,7 @@
 
 **Date:** 2026-11-12 · **By:** web agent · **Live site:** https://the-color-code-site.thecolorcode-mktg4250.workers.dev/
 
-> This file belongs at `ceo/web/SEO.md`. This repository is only `ceo/web/site/`, so it is saved here as `docs/SEO.md` (the `docs/` folder is never published). Copy it up one level.
-
-The course's five-point SEO checklist, done in order, plus structured data. Everything below is in one commit on `main`.
+The course's five-point SEO checklist, done in order, plus structured data (Part 1), then what we changed so AI assistants can find, trust and recommend us (Part 2).
 
 ---
 
@@ -20,20 +18,17 @@ Pages that **stay hidden** (noindex): `account.html`, `result.html`, `reset-pass
 
 | File | What changed |
 |---|---|
-| `robots.txt` | Rewritten. Googlebot, Bingbot, OAI-SearchBot, Claude-SearchBot and PerplexityBot are each named and allowed, and so is every other crawler. Only `/api/` (the selfie endpoint) is blocked. Ends with the `Sitemap:` line. |
-| `sitemap.xml` | **New.** Lists all 10 public pages: home, Start Your Analysis, How It Works, Results & Benefits, the 3 new guides, About, FAQ, Customer Reviews. The 5 noindex pages are left out on purpose: a sitemap tells Google "please index this", which would contradict their noindex tag. |
+| `robots.txt` | Rewritten. Googlebot, Bingbot, OAI-SearchBot, Claude-SearchBot and PerplexityBot are each named and allowed, and so is every other crawler. Only `/api/` (the selfie endpoint) is blocked. Ends with the `Sitemap:` line. (2026-11-14: a dash in its first comment line was changed to a plain hyphen so it displays correctly.) |
+| `sitemap.xml` | **New.** Lists all 10 public pages (11 after Part 2 added Pricing): home, Start Your Analysis, How It Works, Results & Benefits, the 3 new guides, About, FAQ, Customer Reviews. The 5 noindex pages are left out on purpose: a sitemap tells Google "please index this", which would contradict their noindex tag. |
 | Every public page | `noindex, nofollow` → `index, follow`, plus a `<link rel="canonical">` to its full address. |
 
-### Steps you have to do yourself (Google Search Console)
+### Google Search Console (done by the team)
 
-I can't sign in to Google for you. About 10 minutes:
-
-1. Go to https://search.google.com/search-console and sign in with the team Google account.
-2. Click **Add property** and choose **URL prefix** (not Domain: a `workers.dev` address is shared, so the Domain option won't work). Paste `https://the-color-code-site.thecolorcode-mktg4250.workers.dev/`.
-3. ✅ **Done 2026-11-12:** verification tag added to `index.html`. Choose the **HTML tag** verification method. Google shows a line like `<meta name="google-site-verification" content="abc123…">`. **Send me that line** (or paste it into the `<head>` of `index.html` yourself), push it to main, wait for the Cloudflare build to finish, then click **Verify**.
-4. In the left menu, open **Sitemaps**, type `sitemap.xml`, and click **Submit**. The status should say "Success" within a day.
-5. Open **URL inspection**, paste the home page address, and click **Request indexing**. Do the same for the three guide pages.
-6. Optional, same idea for Bing (it also powers ChatGPT search): https://www.bing.com/webmasters → **Import from Google Search Console**. It copies the site and sitemap in one click.
+1. ✅ **2026-11-12:** property added as a **URL prefix** (`https://the-color-code-site.thecolorcode-mktg4250.workers.dev/`); a `workers.dev` address is shared, so the Domain option doesn't work.
+2. ✅ **2026-11-12:** verified with the **HTML tag** method; the `google-site-verification` tag is in the `<head>` of `index.html`. Leave it there, or verification is lost.
+3. ✅ **Sitemap submitted:** `sitemap.xml`.
+4. ⏳ **Request indexing:** the home page's first inspection said "can't be indexed" because Google still had our old `Disallow: /` robots.txt cached; the live test after the cache cleared showed it available, and the daily request quota ran out. Still to request, a few a day: the home page (if not done), `warm-or-cool-undertone.html`, `what-colors-look-good-on-me.html`, `color-analysis-new-orleans.html`, `pricing.html`. The sitemap gets every page found anyway; this only speeds it up.
+5. Optional: Bing Webmaster Tools (https://www.bing.com/webmasters) → **Import from Google Search Console** (Bing also powers ChatGPT search).
 
 **If you get a custom domain later** (for example `thecolorcode.com`), every canonical tag, `sitemap.xml`, `robots.txt` and the About page's structured data must change to the new address, and you add the new domain as its own Search Console property.
 
@@ -128,7 +123,7 @@ Tell me which ones you've done and I'll mark them here.
 
 All 10 public pages now score SEO 100 and accessibility 98–100 in the same test.
 
-**Please record the real PageSpeed Insights score** (it measures through Cloudflare, which my local test can't): open https://pagespeed.web.dev/, paste the home page address, choose **Mobile**, and write the number here: `Mobile performance on live site after deploy: **100** (2026-11-12, run by the team on pagespeed.web.dev)`. It may be a few points lower than mine because of real network latency; the fixes are the same.
+**Official PageSpeed Insights, live site, mobile, after deploy: 100** (2026-11-12, run by the team on pagespeed.web.dev). The "before" figure is my local Lighthouse run, because PageSpeed Insights couldn't be reached from my workspace at the time.
 
 ### What it flagged, and what I fixed
 
@@ -205,7 +200,7 @@ I rebuilt `faq-and-policies.html` instead of adding a second FAQ page, so Google
 9. How does it compare with an in-person color analysis? (draping)
 10. How is it different from free online color quizzes?
 
-Below them come the numbers box (section 8) and the five earlier policy questions (chapter color night, tracking, redo, warm or cool, reviews). The page title is now "FAQ: What We Do, Cost and How to Start".
+Below them come the numbers box (section 8) and the other questions (chapter color night, tracking, redo, warm or cool, the email list, reviews). The page title is now "FAQ: What We Do, Cost and How to Start".
 
 **Everything is true as of 2026-11-14.** I checked each claim against the app's code and our docs: the account is required before the quiz, any email can sign up (not only Tulane addresses), the selfie is never stored, and prices after the pilot are undecided. The comparison answers describe draping and online quizzes in general terms ("usually by appointment and for a fee", "many online quizzes") and name no competitor, so there is nothing about another business we would have to prove.
 
@@ -234,7 +229,7 @@ A "The Color Code in numbers" box is now on the **home page**, the new **Pricing
 |---|---|---|
 | Home | `Organization` | Name, description, location (New Orleans, LA, US), website, logo, Instagram and TikTok, contact (Instagram message) |
 | About | `Organization` (from Part 1) | Same, plus the five team names |
-| FAQ | `FAQPage` | All 15 questions and answers, word for word, linked to the organization |
+| FAQ | `FAQPage` | All 16 questions and answers, word for word, linked to the organization (the 16th, "How do I join or leave your email list?", was added with the CRM sign-up form on 2026-11-16) |
 
 **Everything in the markup is visible on its page.** I checked this with a script that compares every text field in the markup against the page's visible text (no differences). To make the contact visible on every page, the footer now says "Contact: Instagram message to @thecolorcode.collective".
 
