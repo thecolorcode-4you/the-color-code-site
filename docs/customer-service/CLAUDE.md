@@ -24,6 +24,9 @@ A chat box on every public page of our website (the "Questions? Chat" button, bo
   Every replaced reply is logged with a flag (`money`, `date`, `secrets`, `promise`), so we can see what people tried.
 - The chat window says "Automated, answers from our FAQ and Pricing pages" at the top, and the first message says "I'm The Color Code's automated assistant, not a person."
 
+## Changes from testing
+- **2026-11-16, round 1** (five tests on the live site; details in `TESTS.md`): all five kept the hard limits. Two answers were safe but unhelpful, so (1) upset customers who trigger the money check now get an apology and the free-retake advice from our FAQ instead of a generic line, and (2) when our pages say we *don't* offer something, the assistant now says so plainly and what we offer instead, before offering a person. No hard limit was loosened.
+
 ## Passing a question to a person
 When the assistant can't answer, or a reply was replaced, a small form appears: "Want a person on our team to answer by email?" The visitor types their email, and the question goes to the `chat_handoffs` table. **That is the only place a chat email is stored**, because the visitor gave it so we can reply.
 
