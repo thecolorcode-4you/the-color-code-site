@@ -55,9 +55,31 @@ Send nothing, and record nothing, until someone types `SEND`.
 
 ---
 
+## Texts: the second channel (same rules as email)
+Every morning, after the email batch, also run:
+```sql
+select * from public.crm_todays_text_batch();
+```
+It uses the same three moments (welcome / monthly / lapsed) and the same timing, but **only people who ticked the separate text box** (`sms_consent = true`, with a phone number), and it counts from when we last **texted** them, not emailed them. Someone can get both an email and a text on the same day; that's expected, since they agreed to both.
+
+- **Draft** each text from `messages/04-texts.md`. Put the first name only in the monthly text, and keep each under 160 characters (count them).
+- **Show** the text list and drafts together with the email batch, and ask the same question: "Type **SEND** to send these N emails and M texts, or tell me what to change." Nothing goes out without `SEND`.
+- **On `SEND`, send** each text from our Twilio number:
+  - **By hand** (as of 2026-11-16): Twilio Console → Messaging → **Try it out → Send an SMS**. Choose our Twilio number as "From", paste the customer's number as "To", paste the text, and click Send.
+  - **By the agent**, once Twilio API access has been saved in its workspace settings (see "Running it every weekday").
+- **Log** each text in `log.md` with the channel "text": date, customer name, message, sent by, result. Never the phone number.
+- **Update the record** for each text that actually went out:
+  ```sql
+  select public.crm_record_text_sent('+15045550123', 'monthly');  -- or 'welcome' / 'lapsed'
+  ```
+- **STOP replies:** Twilio stops texting anyone who replies STOP by itself. Check Twilio → Monitor → Logs → Messaging each morning for STOP replies, and record each one the same day:
+  `update public.customers set sms_consent = false, sms_consent_on = null where phone = '+15045550123';`
+
 ## One-time setup (already done unless marked)
 - `supabase/crm.sql`: run 2026-11-16.
 - `supabase/crm-test-customers.sql`: run 2026-11-16.
+- **`supabase/crm-texts.sql`: NOT YET RUN.** It adds the phone and text-consent fields and the text versions of the two functions, and updates the sign-up form's database function. Run it after `crm-daily.sql`.
+- **`supabase/crm-test-phones.sql`: NOT YET RUN.** It puts the teammates' mobile numbers on their five test customers, filled in in the SQL Editor only.
 - **`supabase/crm-daily.sql`: NOT YET RUN.** It adds `last_contacted_on` and `last_message` and the two functions above. Paste it into the SQL Editor and click Run once.
 
 ## Running it every weekday at 9 am
@@ -66,6 +88,7 @@ Send nothing, and record nothing, until someone types `SEND`.
 **Until then:** one teammate opens Claude each weekday morning and says **"run the daily task"**, then follows the steps above (run the step-1 query, paste the result in, read the drafts, type `SEND` or ask for changes, send, run the step-4 update).
 
 **To make it run on its own later**, the team needs to:
+1. For texts: save our Twilio Account SID and Auth Token for `api.twilio.com` in the workspace's network secrets (the agent can ask for them with a secure form), and allow that host.
 1. Connect a **Gmail connector** for the venture's account at claude.ai → Settings → Connectors.
 2. Give the agent read-and-update access to the customer record. This means allowing our Supabase host in the cloud environment's network settings and saving a Supabase secret key as a network secret. The key gives full database access, so decide this as a team.
 3. Then type `/schedule` in Claude Code and ask for "the CRM daily task, every weekday at 9 am New Orleans time". The run still stops at step 3 and waits for `SEND`.

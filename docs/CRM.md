@@ -104,3 +104,10 @@ Changed: `index.html` and `pricing.html` (form), `faq-and-policies.html` (email-
 
 ## Lifecycle messages (drafted 2026-11-16, not sent)
 Three email drafts are in `docs/messages/` (copy them to `ceo/crm/messages/`): `01-new.md` (welcome, the day someone joins), `02-active.md` (monthly tip), `03-lapsed.md` (what got in the way, plus a free retake). Each is under 150 words and carries our names, Tulane University, New Orleans, Louisiana, and an unsubscribe line. Send only to rows with `email_consent = true`, and replace `[MAILING ADDRESS]` first.
+
+## Text messages (added 2026-11-16)
+- **The sign-up form** (home page and Pricing page) now has an optional **mobile number** field and a **separate, unticked text-consent box**: "Text me too: I agree to receive about one text a month from The Color Code at this number. Msg & data rates may apply. Reply STOP to stop, HELP for help. Not required to join." Ticking it without a valid number is refused. A number typed without ticking the box is **not saved**.
+- **The record** now holds `phone` (stored as +15045550123), `sms_consent`, `sms_consent_on` (the date they ticked it), `last_texted_on` and `last_text_message`. The database refuses text consent without a date or a phone number.
+- **Three texts** in `messages/04-texts.md`, each under 160 characters and ending "Reply STOP to stop". A new short link, `/quiz`, keeps them short and tags visitors from texts as source `sms`.
+- **Daily task:** texts follow the same draft → show → `SEND` → log routine as email (`DAILY-TASK.md`).
+- **Files:** `supabase/crm-texts.sql`, `supabase/crm-test-phones.sql`, `_redirects`, `email-signup.js`, `index.html`, `pricing.html`.

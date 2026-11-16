@@ -20,6 +20,17 @@ function source() {
   return host.slice(0, 60);
 }
 
+// A US number becomes +15045550123; a number typed with + and a country code is kept.
+export function normalizePhone(raw) {
+  var t = String(raw || '').trim();
+  if (!t) return '';
+  var digits = t.replace(/\D/g, '');
+  if (t.charAt(0) === '+') return digits.length >= 8 && digits.length <= 15 ? '+' + digits : null;
+  if (digits.length === 10) return '+1' + digits;
+  if (digits.length === 11 && digits.charAt(0) === '1') return '+' + digits;
+  return null;
+}
+
 document.querySelectorAll('[data-email-signup]').forEach(function (form) {
   var status = form.querySelector('[data-signup-status]');
   var button = form.querySelector('button[type="submit"]');
@@ -31,6 +42,9 @@ document.querySelectorAll('[data-email-signup]').forEach(function (form) {
     var email = form.elements.email.value.trim();
     if (!form.elements.consent.checked) { say('Please tick the box to agree to receive our emails.', false); return; }
     if (!name || !form.elements.email.checkValidity()) { say('Please enter your name and a valid email.', false); return; }
+    var wantsTexts = form.elements.sms && form.elements.sms.checked;
+    var phone = form.elements.phone ? normalizePhone(form.elements.phone.value) : '';
+    if (wantsTexts && !phone) { say("Please enter a valid mobile number to get texts (like 504 555 0123), or untick the text box.", false); return; }
     if (!supabase) { say("Sorry, we couldn't save that just now. Please try again in a minute.", false); return; }
 
     button.disabled = true;
@@ -39,6 +53,7 @@ document.querySelectorAll('[data-email-signup]').forEach(function (form) {
       p_name: name, p_email: email, p_consent: true, p_source: source(),
       p_utm_source: tag.utm_source, p_utm_medium: tag.utm_medium, p_utm_campaign: tag.utm_campaign,
       p_referrer: firstReferrer(), p_visitor_id: visitorId(),
+      p_phone: wantsTexts ? phone : null, p_sms_consent: !!wantsTexts,
     });
     button.disabled = false;
     if (res.error) {
@@ -48,6 +63,6 @@ document.querySelectorAll('[data-email-signup]').forEach(function (form) {
     }
     if (window.trackEvent) window.trackEvent('email_signup');
     form.reset();
-    say('Thank you, ' + name + "! You're on our email list.", true);
+    say('Thank you, ' + name + (wantsTexts ? "! You're on our email and text lists." : "! You're on our email list."), true);
   });
 });
