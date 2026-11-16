@@ -101,3 +101,6 @@ To delete all test customers later: `delete from public.customers where is_test;
 ## Files
 New: `supabase/crm.sql`, `supabase/crm-test-customers.sql`, `email-signup.js`, `docs/CRM.md`.
 Changed: `index.html` and `pricing.html` (form), `faq-and-policies.html` (email-list question), `track.js` (remembers the first site that sent a visitor), `styles.css`, `sw.js`, the stylesheet version on every page.
+
+## Lifecycle messages (drafted 2026-11-16, not sent)
+Three email drafts are in `docs/messages/` (copy them to `ceo/crm/messages/`): `01-new.md` (welcome, the day someone joins), `02-active.md` (monthly tip), `03-lapsed.md` (what got in the way, plus a free retake). Each is under 150 words and carries our names, Tulane University, New Orleans, Louisiana, and an unsubscribe line. Send only to rows with `email_consent = true`, and replace `[MAILING ADDRESS]` first.
