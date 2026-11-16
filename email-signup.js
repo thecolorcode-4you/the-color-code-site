@@ -49,12 +49,14 @@ document.querySelectorAll('[data-email-signup]').forEach(function (form) {
 
     button.disabled = true;
     var tag = firstTag();
-    var res = await supabase.rpc('join_customer_list', {
+    var args = {
       p_name: name, p_email: email, p_consent: true, p_source: source(),
       p_utm_source: tag.utm_source, p_utm_medium: tag.utm_medium, p_utm_campaign: tag.utm_campaign,
       p_referrer: firstReferrer(), p_visitor_id: visitorId(),
-      p_phone: wantsTexts ? phone : null, p_sms_consent: !!wantsTexts,
-    });
+    };
+    // Only send the text fields when the box is ticked, so email-only sign-ups never depend on them.
+    if (wantsTexts) { args.p_phone = phone; args.p_sms_consent = true; }
+    var res = await supabase.rpc('join_customer_list', args);
     button.disabled = false;
     if (res.error) {
       console.error('[signup]', res.error);
