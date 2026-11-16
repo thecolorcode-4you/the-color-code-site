@@ -12,12 +12,17 @@
 
 import { cleanAnswers, pickSeason, reasonFor, pickSeasonWithPhoto, reasonFromPhoto, goodLight } from '../season-rules.js';
 import { describePhoto, VISION_MODEL } from './photo-reading.js';
+import { handleChat, handleHandoff } from './chat.js';
 
 var MAX_PHOTO_CHARS = 3000000; // about 2 MB of image; the app shrinks photos well below this
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     var url = new URL(request.url);
+    if (url.pathname === '/api/chat' || url.pathname === '/api/chat/handoff') {
+      if (request.method !== 'POST') return json({ error: 'Use POST' }, 405);
+      return url.pathname === '/api/chat' ? handleChat(request, env, ctx) : handleHandoff(request, env);
+    }
     if (url.pathname === '/api/analyze') {
       if (request.method !== 'POST') return json({ error: 'Use POST' }, 405);
       return analyze(request, env);
