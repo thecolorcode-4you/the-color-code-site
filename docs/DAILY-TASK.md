@@ -1,7 +1,7 @@
 # CRM daily task
 
 **What it is:** the job the CRM agent runs every weekday morning. **Written:** 2026-11-16.
-**Belongs at:** `ceo/crm/DAILY-TASK.md` (saved here because this repository only reaches the website; copy it across).
+**Lives at:** `ceo/crm/DAILY-TASK.md`.
 
 ## The rule that never bends
 **Nothing is sent until a person on the team types the go-word:** `SEND`. The agent drafts, shows, and waits. Any other reply ("looks good", "ok", "yes") is not the go-word. Change the word here if the team prefers another.
@@ -75,12 +75,12 @@ It uses the same three moments (welcome / monthly / lapsed) and the same timing,
 - **STOP replies:** Twilio stops texting anyone who replies STOP by itself. Check Twilio → Monitor → Logs → Messaging each morning for STOP replies, and record each one the same day:
   `update public.customers set sms_consent = false, sms_consent_on = null where phone = '+15045550123';`
 
-## One-time setup (already done unless marked)
-- `supabase/crm.sql`: run 2026-11-16.
-- `supabase/crm-test-customers.sql`: run 2026-11-16.
-- **`supabase/crm-texts.sql`: NOT YET RUN.** It adds the phone and text-consent fields and the text versions of the two functions, and updates the sign-up form's database function. Run it after `crm-daily.sql`.
-- **`supabase/crm-test-phones.sql`: NOT YET RUN.** It puts the teammates' mobile numbers on their five test customers, filled in in the SQL Editor only.
-- **`supabase/crm-daily.sql`: NOT YET RUN.** It adds `last_contacted_on` and `last_message` and the two functions above. Paste it into the SQL Editor and click Run once.
+## One-time setup (in Supabase → SQL Editor, in this order)
+1. `supabase/crm.sql`: run 2026-11-16.
+2. `supabase/crm-test-customers.sql`: run 2026-11-16.
+3. **`supabase/crm-daily.sql`: NOT YET RUN.** It adds `last_contacted_on` and `last_message` and the two email functions above.
+4. **`supabase/crm-texts.sql`: NOT YET RUN.** It adds the phone and text-consent fields and the two text functions, and updates the sign-up form's database function.
+5. **`supabase/crm-test-phones.sql`: NOT YET RUN.** It puts the teammates' mobile numbers on their five test customers. Fill the numbers in in the SQL Editor only.
 
 ## Running it every weekday at 9 am
 **Scheduling exists on our setup, but a scheduled run can't do the job yet.** It would start in a fresh cloud workspace that, like this one, can't reach our Supabase database or Gmail, so every morning it could only say "I can't see the record." I haven't created a schedule for that reason.
@@ -88,7 +88,7 @@ It uses the same three moments (welcome / monthly / lapsed) and the same timing,
 **Until then:** one teammate opens Claude each weekday morning and says **"run the daily task"**, then follows the steps above (run the step-1 query, paste the result in, read the drafts, type `SEND` or ask for changes, send, run the step-4 update).
 
 **To make it run on its own later**, the team needs to:
-1. For texts: save our Twilio Account SID and Auth Token for `api.twilio.com` in the workspace's network secrets (the agent can ask for them with a secure form), and allow that host.
 1. Connect a **Gmail connector** for the venture's account at claude.ai → Settings → Connectors.
-2. Give the agent read-and-update access to the customer record. This means allowing our Supabase host in the cloud environment's network settings and saving a Supabase secret key as a network secret. The key gives full database access, so decide this as a team.
-3. Then type `/schedule` in Claude Code and ask for "the CRM daily task, every weekday at 9 am New Orleans time". The run still stops at step 3 and waits for `SEND`.
+2. For texts: save our Twilio Account SID and Auth Token for `api.twilio.com` in the workspace's network secrets (the agent can ask for them with a secure form), and allow that host.
+3. Give the agent read-and-update access to the customer record. This means allowing our Supabase host in the cloud environment's network settings and saving a Supabase secret key as a network secret. The key gives full database access, so decide this as a team.
+4. Then type `/schedule` in Claude Code and ask for "the CRM daily task, every weekday at 9 am New Orleans time". The run still stops at step 3 and waits for `SEND`.
