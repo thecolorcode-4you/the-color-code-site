@@ -77,7 +77,7 @@ To delete all test customers later: `delete from public.customers where is_test;
 
 ## What you need to set up yourselves
 
-> **Status 2026-11-16:** the Supabase project was paused and has been restored. `crm.sql` has been run and the 15 test customers have been added (check result: new 4, active 6, lapsed 5). Still to do: test the live form (below), then steps 4–7.
+> **Status 2026-11-16:** the Supabase project was paused and has been restored. `crm.sql` has been run and the 15 test customers have been added (check result: new 4, active 6, lapsed 5). The live sign-up form was then tested on a phone and saved correctly (new went from 4 to 5). Still to do: steps 4–7.
 
 1. **Create the table (5 minutes, required).** Supabase → our project → **SQL Editor** → New query → paste all of `supabase/crm.sql` → **Run**. It should say "Success. No rows returned."
 2. **Make sure all five of you are on the team list.** The record is only visible to accounts in `team_members`. If anyone hasn't been added yet, run the commented block at the bottom of `supabase/schema.sql` with your real emails.
